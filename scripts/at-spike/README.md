@@ -25,3 +25,5 @@ Every response is saved to `samples/`, which is gitignored. Only the trimmed `sa
 - `filter[start_hour]` returns trips from the whole starting hour, including ones that have already gone.
 - `stop_headsign` ("Manukau via City Centre") reads better than `trip_headsign`.
 - Unknown trip ids return an empty `entity` list, not an error.
+- `/gtfs/v3/stops?filter[date]=…&filter[stop_code]=9320` returns just that stop (about 300 bytes), so the full 2.4 MB list isn't needed to resolve a stop_code. The app uses this; the spike still fetches the full list.
+- Responses can arrive gzip-compressed even without an `Accept-Encoding` request header. `fetch` handles this; raw `https.get` doesn't.

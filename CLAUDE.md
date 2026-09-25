@@ -39,11 +39,12 @@ pnpm expo install <package>   # always use this to add packages: picks SDK-compa
 pnpm expo start               # dev server
 pnpm lint                     # expo lint
 pnpm exec tsc --noEmit        # typecheck
+pnpm test                     # jest (jest-expo); add -- --watch while developing
 pnpm dlx expo-doctor          # diagnose dependency and config issues
 pnpm dlx eas-cli@latest <cmd> # EAS build, submit, update
 ```
 
-Run lint and typecheck before calling a task done. `scripts/at-spike` has its own `package.json` and lockfile: run `pnpm install` inside it. The root `tsconfig.json` and ESLint config exclude it.
+Run lint, typecheck and tests before calling a task done. Unit tests live in `__tests__/` next to the code (mainly `domain/`), with fixtures built from the real responses in `scripts/at-spike/samples/`. `scripts/at-spike` has its own `package.json` and lockfile: run `pnpm install` inside it. The root `tsconfig.json` and ESLint config exclude it.
 
 ## Environment
 

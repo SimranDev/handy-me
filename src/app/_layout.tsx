@@ -13,6 +13,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
 import AppTabs from "@/components/app-tabs";
+import { QueryProvider } from "@/components/query-provider";
 import { usePhase } from "@/hooks/use-phase";
 
 SplashScreen.preventAutoHideAsync();
@@ -34,9 +35,9 @@ export default function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
-    <>
+    <QueryProvider>
       <StatusBar style={phase === "night" ? "light" : "dark"} />
       <AppTabs />
-    </>
+    </QueryProvider>
   );
 }

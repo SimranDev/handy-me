@@ -17,12 +17,12 @@ import {
   PhaseThemes,
   phaseFor,
 } from "@/constants/theme";
-import {
-  MAIN_TRAIN,
-  planCommute,
-} from "@/features/train-tracker/domain/commute";
-import { nextArrival } from "@/features/train-tracker/mock/timetable";
+import { NO_ARRIVALS } from "@/features/train-tracker/domain/arrivals";
+import { planCommute } from "@/features/train-tracker/domain/commute";
+import { formatClock } from "@/features/train-tracker/domain/time";
+import { describeArrivalsError } from "@/features/train-tracker/ui/arrivals-error";
 import { HorizonScene } from "@/features/train-tracker/ui/horizon-scene";
+import { useArrivals } from "@/features/train-tracker/ui/use-arrivals";
 import { useNow } from "@/hooks/use-now";
 
 const GREETING: Record<Phase, string> = {
@@ -36,21 +36,36 @@ export function CommuteScreen() {
   const now = useNow();
   const insets = useSafeAreaInsets();
   const tabBarHeight = useTabBarHeight();
+  const { data, error, dataUpdatedAt } = useArrivals();
 
   const phase = phaseFor(new Date(now).getHours());
   const t = PhaseThemes[phase];
 
-  // A picked train only sticks while it belongs to the current set of departures;
-  // once the main train arrives the list rolls forward and selection resets.
-  const arrival = nextArrival(now);
-  const [picked, setPicked] = useState({ arrival, index: MAIN_TRAIN });
-  const selected = picked.arrival === arrival ? picked.index : MAIN_TRAIN;
-  const plan = planCommute(now, arrival, selected);
+  // The picked train sticks until it leaves or is cancelled; planCommute then
+  // falls back to the next train.
+  const [pickedTripId, setPickedTripId] = useState<string | null>(null);
+  const plan = planCommute(now, data ?? NO_ARRIVALS, pickedTripId);
 
-  const select = (index: number) => {
-    setPicked({ arrival, index });
+  const select = (tripId: string) => {
+    setPickedTripId(tripId);
     if (Platform.OS !== "web") Haptics.selectionAsync();
   };
+
+  // Before the first successful fetch, show loading or the error instead.
+  const failure = error ? describeArrivalsError(error) : null;
+  const hero = data
+    ? {
+        mins: plan.minsLabel,
+        until: plan.arrivalLabel
+          ? `until the ${plan.arrivalLabel} reaches Sunnyvale`
+          : "due in the next two hours",
+      }
+    : { mins: failure ? "No trains" : "Checking…", until: null };
+  const card = data
+    ? { title: plan.leaveTitle, sub: plan.leaveSub }
+    : failure
+      ? { title: failure.title, sub: failure.detail }
+      : { title: "Checking the trains.", sub: "One moment." };
 
   return (
     <ScrollView
@@ -65,26 +80,29 @@ export function CommuteScreen() {
           <Text style={[styles.greeting, { color: t.ink2 }]}>
             {GREETING[phase]} · to Britomart
           </Text>
-          <Text style={[styles.mins, { color: t.ink }]}>{plan.minsLabel}</Text>
-          <Text style={[styles.until, { color: t.ink2 }]}>
-            until the {plan.arrivalLabel} reaches Sunnyvale
-          </Text>
+          <Text style={[styles.mins, { color: t.ink }]}>{hero.mins}</Text>
+          {hero.until && (
+            <Text style={[styles.until, { color: t.ink2 }]}>{hero.until}</Text>
+          )}
         </View>
       </View>
 
       <View style={styles.card}>
         <Text style={[styles.leaveTitle, { color: t.cardInk }]}>
-          {plan.leaveTitle}
+          {card.title}
         </Text>
-        <Text style={[styles.leaveSub, { color: t.cardInk2 }]}>
-          {plan.leaveSub}
-        </Text>
+        <Text style={[styles.leaveSub, { color: t.cardInk2 }]}>{card.sub}</Text>
         <View style={[styles.rule, { backgroundColor: t.rule }]} />
+        {data && failure && (
+          <Text style={[styles.notice, { color: t.muted }]}>
+            {failure.title} Showing trains as of {formatClock(dataUpdatedAt)}.
+          </Text>
+        )}
         {plan.rows.map((row) => (
           <Pressable
-            key={row.index}
+            key={row.tripId}
             disabled={!row.selectable}
-            onPress={() => select(row.index)}
+            onPress={() => select(row.tripId)}
             accessibilityRole="button"
             accessibilityLabel={`${row.time}, ${row.status}`}
             accessibilityHint={
@@ -176,6 +194,12 @@ const styles = StyleSheet.create({
   },
   rowPressed: {
     backgroundColor: "rgba(127,127,127,0.08)",
+  },
+  notice: {
+    fontFamily: FontFamily.sans,
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 8,
   },
   rowText: {
     fontFamily: FontFamily.sans,

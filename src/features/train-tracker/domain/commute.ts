@@ -1,12 +1,12 @@
-export const MINUTE = 60_000;
-/** Assumed walk from home to the platform. */
-export const WALK_MINUTES = 7;
-
-type TrainKind = "gone" | "main" | "late" | "scheduled";
-type Train = { at: number; eta: number; kind: TrainKind };
+import type {
+  Arrival,
+  Arrivals,
+} from "@/features/train-tracker/domain/arrivals";
+import { WALK_MINUTES } from "@/features/train-tracker/domain/config";
+import { formatClock, MINUTE } from "@/features/train-tracker/domain/time";
 
 export type DepartureRow = {
-  index: number;
+  tripId: string;
   time: string;
   status: string;
   tone: "muted" | "late" | "normal";
@@ -14,8 +14,11 @@ export type DepartureRow = {
 };
 
 export type CommutePlan = {
+  /** Trip the countdown is about: the picked train, else the next one. */
+  targetTripId: string | null;
   minsLabel: string;
-  arrivalLabel: string;
+  /** Scheduled time of the target train, e.g. "20:44"; null when there is none. */
+  arrivalLabel: string | null;
   leaveTitle: string;
   leaveSub: string;
   rows: DepartureRow[];
@@ -23,32 +26,49 @@ export type CommutePlan = {
   trainFront: number;
 };
 
-/** Default selection: the next train to arrive. */
-export const MAIN_TRAIN = 1;
+const MAX_ROWS = 3;
 
-export const formatClock = (ms: number) => {
-  const d = new Date(ms);
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-};
-
+/**
+ * What to show on the commute screen at `nowMs`. `pickedTripId` is the train
+ * the user tapped; if it has gone (or was cancelled) the next train is used.
+ */
 export function planCommute(
-  now: number,
-  arrival: number,
-  selected: number,
+  nowMs: number,
+  arrivals: Arrivals,
+  pickedTripId?: string | null,
 ): CommutePlan {
-  const trains: Train[] = [
-    { at: arrival - 11 * MINUTE, eta: arrival - 11 * MINUTE, kind: "gone" },
-    { at: arrival, eta: arrival, kind: "main" },
-    { at: arrival + 15 * MINUTE, eta: arrival + 17 * MINUTE, kind: "late" },
-    {
-      at: arrival + 30 * MINUTE,
-      eta: arrival + 30 * MINUTE,
-      kind: "scheduled",
-    },
-  ];
-  const target = trains[selected] ?? trains[MAIN_TRAIN];
-  const mins = Math.max(0, Math.ceil((target.eta - now) / MINUTE));
+  const { justDeparted, next, afterNext } = arrivals;
+  const catchable = [next, ...afterNext].filter(
+    (a): a is Arrival => a != null && a.status.kind !== "cancelled",
+  );
+  const target = catchable.find((a) => a.tripId === pickedTripId) ?? next;
+  const minsUntil = (a: Arrival) =>
+    Math.max(0, Math.ceil((a.etaMs - nowMs) / MINUTE));
+
+  const rows = [justDeparted, next, ...afterNext]
+    .filter((a): a is Arrival => a != null && a.tripId !== target?.tripId)
+    .slice(0, MAX_ROWS)
+    .map((a) => rowFor(a, a === justDeparted, nowMs, minsUntil(a)));
+
+  const trainFront = next
+    ? Math.max(-40, 358 - Math.max(0, (next.etaMs - nowMs) / MINUTE) * 16.2)
+    : -40;
+
+  if (!target) {
+    return {
+      targetTripId: null,
+      minsLabel: "No trains",
+      arrivalLabel: null,
+      leaveTitle: "Nothing to catch.",
+      leaveSub: "No trains are due in the next two hours.",
+      rows,
+      trainFront,
+    };
+  }
+
+  const mins = minsUntil(target);
   const leave = mins - WALK_MINUTES;
+  const later = catchable[catchable.indexOf(target) + 1];
 
   let leaveTitle: string;
   let leaveSub: string;
@@ -61,49 +81,60 @@ export function planCommute(
   } else if (leave >= -1) {
     leaveTitle = "Leave now.";
     leaveSub = "Walk quickly and you will just make it.";
-  } else {
+  } else if (later) {
     leaveTitle = "Catch the next one.";
-    leaveSub = `The ${formatClock(trains[Math.min(selected + 1, trains.length - 1)].at)} is on its way.`;
+    leaveSub = `The ${formatClock(later.scheduledMs)} is on its way.`;
+  } else {
+    leaveTitle = "Too late for this one.";
+    leaveSub = "There is no later train in the next two hours.";
   }
 
-  const statusOf = (train: Train): Pick<DepartureRow, "status" | "tone"> => {
-    switch (train.kind) {
-      case "gone":
-        return {
-          status: `Left ${Math.max(1, Math.round((now - train.at) / MINUTE))} min ago`,
-          tone: "muted",
-        };
-      case "late":
-        return { status: "Running 2 min late", tone: "late" };
-      case "main":
-        return {
-          status: `In ${Math.max(0, Math.ceil((train.eta - now) / MINUTE))} min`,
-          tone: "normal",
-        };
-      default:
-        return { status: "Scheduled", tone: "muted" };
-    }
-  };
-
-  const rows = trains
-    .map((train, index) => ({ train, index }))
-    .filter(({ index }) => index !== selected)
-    .map(({ train, index }) => ({
-      index,
-      time: formatClock(train.at),
-      selectable: train.kind !== "gone",
-      ...statusOf(train),
-    }));
-
-  const mainRemaining = Math.max(0, (arrival - now) / MINUTE);
-
   return {
+    targetTripId: target.tripId,
     minsLabel:
       mins === 0 ? "Arriving" : mins === 1 ? "1 minute" : `${mins} minutes`,
-    arrivalLabel: formatClock(target.at),
+    arrivalLabel: formatClock(target.scheduledMs),
     leaveTitle,
     leaveSub,
     rows,
-    trainFront: Math.max(-40, 358 - mainRemaining * 16.2),
+    trainFront,
   };
+}
+
+function rowFor(
+  a: Arrival,
+  departed: boolean,
+  nowMs: number,
+  mins: number,
+): DepartureRow {
+  const base = { tripId: a.tripId, time: formatClock(a.scheduledMs) };
+  if (departed) {
+    const ago = Math.max(1, Math.round((nowMs - a.etaMs) / MINUTE));
+    return {
+      ...base,
+      status: `Left ${ago} min ago`,
+      tone: "muted",
+      selectable: false,
+    };
+  }
+  switch (a.status.kind) {
+    case "cancelled":
+      return { ...base, status: "Cancelled", tone: "late", selectable: false };
+    case "late":
+      return {
+        ...base,
+        status: `Running ${a.status.minutes} min late`,
+        tone: "late",
+        selectable: true,
+      };
+    default:
+      return a.source === "live"
+        ? {
+            ...base,
+            status: `In ${mins} min`,
+            tone: "normal",
+            selectable: true,
+          }
+        : { ...base, status: "Scheduled", tone: "muted", selectable: true };
+  }
 }
