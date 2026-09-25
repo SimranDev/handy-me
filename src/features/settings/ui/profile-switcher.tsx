@@ -1,53 +1,72 @@
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FontFamily } from "@/constants/theme";
+import { BottomSheet } from "@/components/bottom-sheet";
+import { FontFamily, type PhaseTheme } from "@/constants/theme";
 import {
   canAddProfile,
+  type Settings,
   switchProfile,
 } from "@/features/settings/domain/settings";
-import {
-  updateSettings,
-  useSettings,
-} from "@/features/settings/store/settings-store";
+import { updateSettings } from "@/features/settings/store/settings-store";
 import { startNewProfile } from "@/features/settings/ui/new-profile";
 import { ProfileRow } from "@/features/settings/ui/profile-row";
-import { useSky } from "@/hooks/use-sky";
 
-/** Opened from the Commute screen: switch, edit or add a commute profile. */
-export function ProfileSheetScreen() {
-  const { theme: t } = useSky();
-  const insets = useSafeAreaInsets();
-  const settingsState = useSettings();
+/** Bottom sheet on the Commute screen: switch, edit or add a commute profile. */
+export function ProfileSwitcher({
+  visible,
+  onClose,
+  settings,
+  theme: t,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  settings: Settings;
+  theme: PhaseTheme;
+}) {
   const [editing, setEditing] = useState(false);
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+    if (visible) setEditing(false);
+  }
 
-  if (settingsState.status !== "ready") return null;
-  const { settings } = settingsState;
+  // Opening the editor waits until the sheet has slid away, so the editor
+  // isn't shown underneath it.
+  const afterClose = useRef<(() => void) | null>(null);
+  const closeThen = (action: () => void) => {
+    afterClose.current = action;
+    onClose();
+  };
 
   const choose = (id: string) => {
     if (editing) {
-      router.push({ pathname: "/profile", params: { id } });
+      closeThen(() => router.push({ pathname: "/profile", params: { id } }));
       return;
     }
     if (id !== settings.activeProfileId) {
       if (Platform.OS !== "web") Haptics.selectionAsync();
       updateSettings((s) => switchProfile(s, id));
     }
-    router.back();
+    onClose();
   };
 
   return (
-    <View
-      style={[
-        styles.sheet,
-        {
-          backgroundColor: t.card,
-          paddingBottom: Math.max(insets.bottom, 16) + 8,
-        },
-      ]}
+    <BottomSheet
+      visible={visible}
+      onClose={() => {
+        afterClose.current = null;
+        onClose();
+      }}
+      onDismissed={() => {
+        const action = afterClose.current;
+        afterClose.current = null;
+        action?.();
+      }}
+      theme={t}
+      accessibilityLabel="Commute profile"
     >
       <View style={styles.header}>
         <Text
@@ -69,7 +88,10 @@ export function ProfileSheetScreen() {
         </Pressable>
       </View>
 
-      <View accessibilityRole={editing ? undefined : "radiogroup"}>
+      <View
+        accessibilityRole={editing ? undefined : "radiogroup"}
+        style={styles.list}
+      >
         {settings.profiles.map((profile) => (
           <ProfileRow
             key={profile.id}
@@ -87,7 +109,7 @@ export function ProfileSheetScreen() {
 
       {canAddProfile(settings) && (
         <Pressable
-          onPress={startNewProfile}
+          onPress={() => closeThen(startNewProfile)}
           accessibilityRole="button"
           style={({ pressed }) => [
             styles.add,
@@ -100,22 +122,17 @@ export function ProfileSheetScreen() {
           </Text>
         </Pressable>
       )}
-    </View>
+    </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  sheet: {
-    paddingTop: 28,
-    paddingHorizontal: 10,
-    gap: 6,
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 14,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   title: {
     fontFamily: FontFamily.serifSemiBold,
@@ -126,11 +143,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.sansBold,
     fontSize: 16,
   },
+  list: {
+    gap: 6,
+  },
   add: {
     minHeight: 52,
     justifyContent: "center",
     paddingHorizontal: 14,
-    marginTop: 6,
+    marginTop: 12,
     borderRadius: 14,
     borderWidth: 1,
     borderStyle: "dashed",

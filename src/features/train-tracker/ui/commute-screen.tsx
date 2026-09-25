@@ -22,6 +22,7 @@ import {
   missingSetup,
 } from "@/features/settings/domain/settings";
 import { useSettings } from "@/features/settings/store/settings-store";
+import { ProfileSwitcher } from "@/features/settings/ui/profile-switcher";
 import {
   hasUsableKey,
   useApiKeyState,
@@ -60,6 +61,7 @@ export function CommuteScreen() {
     settingsState.status === "ready" ? settingsState.settings : null;
   const profile = settings ? activeProfile(settings) : null;
   const station = profile?.station ?? null;
+  const [switcherOpen, setSwitcherOpen] = useState(false);
   const setupKnown = settings != null && keyState.status !== "loading";
   const missing = setupKnown
     ? missingSetup(dataSource, hasUsableKey(keyState), station)
@@ -203,7 +205,13 @@ export function CommuteScreen() {
             <Text style={[styles.until, { color: t.ink2 }]}>{hero.until}</Text>
           )}
         </View>
-        {profile && <ProfilePill name={profile.name} theme={t} />}
+        {profile && (
+          <ProfilePill
+            name={profile.name}
+            theme={t}
+            onPress={() => setSwitcherOpen(true)}
+          />
+        )}
       </View>
 
       <View style={styles.card}>
@@ -259,6 +267,15 @@ export function CommuteScreen() {
           </Pressable>
         ))}
       </View>
+
+      {settings && (
+        <ProfileSwitcher
+          visible={switcherOpen}
+          onClose={() => setSwitcherOpen(false)}
+          settings={settings}
+          theme={t}
+        />
+      )}
     </ScrollView>
   );
 }
@@ -282,10 +299,18 @@ function SourceBadge({ live, theme: t }: { live: boolean; theme: PhaseTheme }) {
 }
 
 /** The commute in use; opens the sheet to switch, edit or add one. */
-function ProfilePill({ name, theme: t }: { name: string; theme: PhaseTheme }) {
+function ProfilePill({
+  name,
+  theme: t,
+  onPress,
+}: {
+  name: string;
+  theme: PhaseTheme;
+  onPress: () => void;
+}) {
   return (
     <Pressable
-      onPress={() => router.push("/profiles")}
+      onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`Commute profile: ${name}`}
       accessibilityHint="Switch, edit or add a commute profile"
