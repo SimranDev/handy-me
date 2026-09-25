@@ -3,7 +3,7 @@ import type {
   Arrivals,
 } from "@/features/train-tracker/domain/arrivals";
 import { WALK_MINUTES } from "@/features/train-tracker/domain/config";
-import { formatClock, MINUTE } from "@/features/train-tracker/domain/time";
+import { formatClock, MINUTE } from "@/domain/time";
 
 export type DepartureRow = {
   tripId: string;
@@ -22,8 +22,12 @@ export type CommutePlan = {
   leaveTitle: string;
   leaveSub: string;
   rows: DepartureRow[];
-  /** x of the train's nose on the 390pt-wide track. */
-  trainFront: number;
+  /** Estimated departure of the target train; drives the train in the scene. */
+  targetEtaMs: number | null;
+  /** Minutes until you need to leave for the target train (0 = now, negative = too late). */
+  leaveMinutes: number | null;
+  /** Spoken summary of the scene, e.g. "Train 9 minutes away, arrives 10:42". */
+  sceneLabel: string;
 };
 
 const MAX_ROWS = 3;
@@ -50,10 +54,6 @@ export function planCommute(
     .slice(0, MAX_ROWS)
     .map((a) => rowFor(a, a === justDeparted, nowMs, minsUntil(a)));
 
-  const trainFront = next
-    ? Math.max(-40, 358 - Math.max(0, (next.etaMs - nowMs) / MINUTE) * 16.2)
-    : -40;
-
   if (!target) {
     return {
       targetTripId: null,
@@ -62,7 +62,9 @@ export function planCommute(
       leaveTitle: "Nothing to catch.",
       leaveSub: "No trains are due in the next two hours.",
       rows,
-      trainFront,
+      targetEtaMs: null,
+      leaveMinutes: null,
+      sceneLabel: "No trains in the next two hours",
     };
   }
 
@@ -97,7 +99,12 @@ export function planCommute(
     leaveTitle,
     leaveSub,
     rows,
-    trainFront,
+    targetEtaMs: target.etaMs,
+    leaveMinutes: leave,
+    sceneLabel:
+      mins === 0
+        ? `Train arriving now, departs ${formatClock(target.etaMs)}`
+        : `Train ${mins} minute${mins === 1 ? "" : "s"} away, arrives ${formatClock(target.etaMs)}`,
   };
 }
 

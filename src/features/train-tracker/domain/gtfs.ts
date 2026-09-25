@@ -2,12 +2,7 @@ import {
   LOOKAHEAD_MS,
   LOOKBACK_MS,
 } from "@/features/train-tracker/domain/config";
-import {
-  aucklandParts,
-  gtfsTimeToMs,
-  HOUR,
-  previousDate,
-} from "@/features/train-tracker/domain/time";
+import { aucklandParts, gtfsTimeToMs, HOUR, previousDate } from "@/domain/time";
 
 /** Attributes of a GTFS v3 `stop`. */
 export type Stop = {

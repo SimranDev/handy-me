@@ -11,7 +11,7 @@ import {
   pickTrackedTrips,
 } from "@/features/train-tracker/domain/arrivals";
 import type { TripUpdate } from "@/features/train-tracker/domain/realtime";
-import { MINUTE } from "@/features/train-tracker/domain/time";
+import { MINUTE } from "@/domain/time";
 
 const now = fixtureNowMs; // 2026-09-25 23:53:43 NZST
 

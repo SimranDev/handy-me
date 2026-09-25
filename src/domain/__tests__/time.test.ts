@@ -3,7 +3,7 @@ import {
   formatClock,
   gtfsTimeToMs,
   previousDate,
-} from "@/features/train-tracker/domain/time";
+} from "@/domain/time";
 
 describe("gtfsTimeToMs", () => {
   it("resolves a time on the service date in Auckland time", () => {

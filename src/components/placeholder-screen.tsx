@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, Line, Pattern, Rect } from "react-native-svg";
 
 import { Fonts, FontFamily } from "@/constants/theme";
-import { usePhase } from "@/hooks/use-phase";
+import { useSky } from "@/hooks/use-sky";
 
 type Props = {
   title: string;
@@ -12,7 +12,7 @@ type Props = {
 
 /** Stand-in for tabs whose feature hasn't been designed yet. */
 export function PlaceholderScreen({ title, note }: Props) {
-  const { theme } = usePhase();
+  const { theme } = useSky();
   const insets = useSafeAreaInsets();
 
   return (

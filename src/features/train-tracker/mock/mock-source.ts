@@ -2,7 +2,7 @@ import { buildArrivals } from "@/features/train-tracker/domain/arrivals";
 import type { ArrivalsSource } from "@/features/train-tracker/domain/arrivals-source";
 import type { ScheduledTrip } from "@/features/train-tracker/domain/gtfs";
 import type { TripUpdate } from "@/features/train-tracker/domain/realtime";
-import { aucklandParts, MINUTE } from "@/features/train-tracker/domain/time";
+import { aucklandParts, MINUTE } from "@/domain/time";
 
 const HEADWAY = 15 * MINUTE;
 const OUR_STOP_SEQUENCE = 5;

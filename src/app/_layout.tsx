@@ -14,7 +14,7 @@ import { useEffect } from "react";
 
 import AppTabs from "@/components/app-tabs";
 import { QueryProvider } from "@/components/query-provider";
-import { usePhase } from "@/hooks/use-phase";
+import { useSky } from "@/hooks/use-sky";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,7 +26,7 @@ export default function RootLayout() {
     Fraunces_500Medium,
     Fraunces_600SemiBold,
   });
-  const { phase } = usePhase();
+  const { phase } = useSky();
 
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync();

@@ -11,7 +11,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FontFamily } from "@/constants/theme";
-import { usePhase } from "@/hooks/use-phase";
+import { useSky } from "@/hooks/use-sky";
 
 type Shape = "circle" | "train" | "tbd";
 
@@ -49,7 +49,7 @@ export default function AppTabs() {
 }
 
 function TabBar(props: TabListProps) {
-  const { theme } = usePhase();
+  const { theme } = useSky();
   const height = useTabBarHeight();
 
   return (
@@ -66,7 +66,7 @@ function TabBar(props: TabListProps) {
 type TabButtonProps = TabTriggerSlotProps & { label: string; shape: Shape };
 
 function TabButton({ label, shape, isFocused, ...props }: TabButtonProps) {
-  const { theme } = usePhase();
+  const { theme } = useSky();
   const color = isFocused ? theme.cardInk : theme.muted;
 
   return (

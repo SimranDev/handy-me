@@ -1,5 +1,6 @@
 import * as Haptics from "expo-haptics";
-import { useState } from "react";
+import { useIsFocused } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -11,40 +12,39 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTabBarHeight } from "@/components/app-tabs";
-import {
-  FontFamily,
-  type Phase,
-  PhaseThemes,
-  phaseFor,
-} from "@/constants/theme";
+import { FontFamily } from "@/constants/theme";
+import { greetingFor } from "@/domain/sky";
+import { formatClock, MINUTE } from "@/domain/time";
 import { NO_ARRIVALS } from "@/features/train-tracker/domain/arrivals";
 import { planCommute } from "@/features/train-tracker/domain/commute";
-import { formatClock } from "@/features/train-tracker/domain/time";
 import { describeArrivalsError } from "@/features/train-tracker/ui/arrivals-error";
 import { HorizonScene } from "@/features/train-tracker/ui/horizon-scene";
 import { useArrivals } from "@/features/train-tracker/ui/use-arrivals";
-import { useNow } from "@/hooks/use-now";
-
-const GREETING: Record<Phase, string> = {
-  dawn: "Good morning",
-  midday: "Good afternoon",
-  dusk: "Good evening",
-  night: "Late one",
-};
+import { useAppActive } from "@/hooks/use-app-active";
+import { useSky } from "@/hooks/use-sky";
 
 export function CommuteScreen() {
-  const now = useNow();
+  const { now, sky, theme: t } = useSky(1000);
+  const isFocused = useIsFocused();
+  const appActive = useAppActive();
   const insets = useSafeAreaInsets();
   const tabBarHeight = useTabBarHeight();
   const { data, error, dataUpdatedAt } = useArrivals();
-
-  const phase = phaseFor(new Date(now).getHours());
-  const t = PhaseThemes[phase];
 
   // The picked train sticks until it leaves or is cancelled; planCommute then
   // falls back to the next train.
   const [pickedTripId, setPickedTripId] = useState<string | null>(null);
   const plan = planCommute(now, data ?? NO_ARRIVALS, pickedTripId);
+
+  // One nudge when it's time to leave for the planned train, at most once per train.
+  const nudgedTrips = useRef(new Set<string>());
+  useEffect(() => {
+    const tripId = plan.targetTripId;
+    if (Platform.OS === "web" || plan.leaveMinutes !== 0 || !tripId) return;
+    if (nudgedTrips.current.has(tripId)) return;
+    nudgedTrips.current.add(tripId);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  }, [plan.leaveMinutes, plan.targetTripId]);
 
   const select = (tripId: string) => {
     setPickedTripId(tripId);
@@ -75,10 +75,27 @@ export function CommuteScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View>
-        <HorizonScene phase={phase} trainFront={plan.trainFront} />
+        <HorizonScene
+          sky={sky}
+          theme={t}
+          train={
+            plan.targetTripId && plan.targetEtaMs != null
+              ? { tripId: plan.targetTripId, etaMs: plan.targetEtaMs }
+              : null
+          }
+          dueSoon={
+            plan.targetEtaMs != null &&
+            plan.targetEtaMs - now <= MINUTE &&
+            plan.targetEtaMs - now > -30_000
+          }
+          active={isFocused && appActive}
+          accessibilityLabel={
+            data ? plan.sceneLabel : `${hero.mins} ${hero.until ?? ""}`.trim()
+          }
+        />
         <View style={[styles.hero, { top: Math.max(insets.top + 12, 32) }]}>
           <Text style={[styles.greeting, { color: t.ink2 }]}>
-            {GREETING[phase]} · to Britomart
+            {greetingFor(sky.phase, now)} · to Britomart
           </Text>
           <Text style={[styles.mins, { color: t.ink }]}>{hero.mins}</Text>
           {hero.until && (

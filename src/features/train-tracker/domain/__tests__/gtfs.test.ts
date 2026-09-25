@@ -6,7 +6,7 @@ import {
   mergeSchedules,
   stopTripQueries,
 } from "@/features/train-tracker/domain/gtfs";
-import { MINUTE } from "@/features/train-tracker/domain/time";
+import { MINUTE } from "@/domain/time";
 
 const at = (iso: string) => Date.parse(iso);
 

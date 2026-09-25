@@ -15,7 +15,7 @@ import {
   stopTripQueries,
 } from "@/features/train-tracker/domain/gtfs";
 import { createStopResolver } from "@/features/train-tracker/domain/stop-resolver";
-import { aucklandParts } from "@/features/train-tracker/domain/time";
+import { aucklandParts } from "@/domain/time";
 
 /**
  * Arrivals from the AT API. Per poll: one realtime call; the stop is resolved

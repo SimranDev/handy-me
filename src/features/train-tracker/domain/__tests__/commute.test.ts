@@ -11,7 +11,7 @@ import {
   pickTrackedTrips,
 } from "@/features/train-tracker/domain/arrivals";
 import { planCommute } from "@/features/train-tracker/domain/commute";
-import { MINUTE } from "@/features/train-tracker/domain/time";
+import { MINUTE } from "@/domain/time";
 
 const now = fixtureNowMs; // 23:53:43; next train 00:04 (+9s)
 const arrivals = buildArrivals(
@@ -28,6 +28,9 @@ describe("planCommute", () => {
       minsLabel: "11 minutes",
       arrivalLabel: "00:04",
       leaveTitle: "Leave in 4 minutes.",
+      targetEtaMs: arrivals.next!.etaMs,
+      leaveMinutes: 4,
+      sceneLabel: "Train 11 minutes away, arrives 00:04",
     });
     expect(plan.rows).toEqual([
       {
@@ -99,6 +102,18 @@ describe("planCommute", () => {
     ]);
   });
 
+  it("counts leave minutes down through zero", () => {
+    const eta = arrivals.next!.etaMs;
+    expect(planCommute(eta - 7 * MINUTE, arrivals).leaveMinutes).toBe(0);
+    expect(planCommute(eta - 6 * MINUTE, arrivals).leaveMinutes).toBe(-1);
+  });
+
+  it("labels an arriving train", () => {
+    expect(
+      planCommute(arrivals.next!.etaMs + 10_000, arrivals).sceneLabel,
+    ).toBe("Train arriving now, departs 00:04");
+  });
+
   it("handles no trains at all", () => {
     expect(planCommute(now, NO_ARRIVALS)).toEqual({
       targetTripId: null,
@@ -107,7 +122,9 @@ describe("planCommute", () => {
       leaveTitle: "Nothing to catch.",
       leaveSub: "No trains are due in the next two hours.",
       rows: [],
-      trainFront: -40,
+      targetEtaMs: null,
+      leaveMinutes: null,
+      sceneLabel: "No trains in the next two hours",
     });
   });
 });

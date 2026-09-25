@@ -64,10 +64,15 @@
       "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
     ],
     "moduleNameMapper": {
+      "\\.css$": "<rootDir>/jest/style-stub.js",
       "^@/(.*)$": "<rootDir>/src/$1"
     },
     "modulePathIgnorePatterns": [
       "<rootDir>/scripts/at-spike/node_modules"
+    ],
+    "resolver": "react-native-worklets/jest/resolver",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest/setup.js"
     ]
   }
 }

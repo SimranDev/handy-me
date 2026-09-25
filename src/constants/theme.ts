@@ -1,6 +1,7 @@
 import "@/global.css";
 
 import { Platform } from "react-native";
+import { interpolateColor } from "react-native-reanimated";
 
 export const Fonts = Platform.select({
   ios: {
@@ -154,11 +155,105 @@ export const PhaseThemes: Record<Phase, PhaseTheme> = {
   },
 };
 
-export function phaseFor(hour: number): Phase {
-  if (hour >= 5 && hour < 10) return "dawn";
-  if (hour >= 10 && hour < 17) return "midday";
-  if (hour >= 17 && hour < 20) return "dusk";
-  return "night";
+const BLEND_ORDER: readonly PhaseTheme[] = [
+  PhaseThemes.night,
+  PhaseThemes.dawn,
+  PhaseThemes.midday,
+  PhaseThemes.dusk,
+  PhaseThemes.night,
+];
+const BLEND_STOPS = [0, 1, 2, 3, 4];
+
+/** Card and tab-bar surfaces and the text on them. */
+const CHROME_KEYS: ReadonlySet<keyof PhaseTheme> = new Set([
+  "card",
+  "glass",
+  "rule",
+  "stripe",
+  "cardInk",
+  "cardInk2",
+  "muted",
+  "late",
+]);
+
+/**
+ * The palette for a sky `progress` (see `Sky` in src/domain/sky.ts), blending
+ * night → dawn → midday → dusk → night.
+ *
+ * - Scene colours (sky, hills, sun, train…) always blend continuously.
+ * - Between a light palette and night, blending a light card with dark text
+ *   into a dark card with light text would pass through unreadable mid-grey.
+ *   So UI chrome (card, tab bar and their text) blends among the light
+ *   palettes but switches between light and dark at the midpoint of
+ *   twilight, and text drawn on the sky takes whichever neighbouring text
+ *   colour reads best against the current sky.
+ * - The beam only exists after dark (dawn/midday have it "transparent"), so
+ *   it blends dusk → night and is faded with `sky.lights` instead.
+ */
+export function blendTheme(progress: number): PhaseTheme {
+  const p = Math.min(4, Math.max(0, progress));
+  const segment = Math.min(3, Math.floor(p));
+  const from = BLEND_ORDER[segment];
+  const to = BLEND_ORDER[segment + 1];
+  const crossesDark =
+    (from === PhaseThemes.night) !== (to === PhaseThemes.night);
+  const chromeP = crossesDark ? (p - segment < 0.5 ? segment : segment + 1) : p;
+
+  const blend = (key: keyof PhaseTheme, at: number) =>
+    interpolateColor(
+      at,
+      BLEND_STOPS,
+      BLEND_ORDER.map((t) => t[key]),
+    ) as string;
+
+  const theme = {} as PhaseTheme;
+  for (const key of Object.keys(PhaseThemes.night) as (keyof PhaseTheme)[]) {
+    if (key === "beam") {
+      theme.beam = interpolateColor(
+        Math.min(4, Math.max(3, p)),
+        [3, 4],
+        [PhaseThemes.dusk.beam, PhaseThemes.night.beam],
+      ) as string;
+    } else if (CHROME_KEYS.has(key)) {
+      theme[key] = blend(key, chromeP);
+    } else if (key !== "ink" && key !== "ink2") {
+      theme[key] = blend(key, p);
+    }
+  }
+
+  if (crossesDark) {
+    // Secondary sky text may borrow the primary ink when that reads better.
+    const inks = [from.ink, to.ink];
+    theme.ink = mostLegible(inks, theme.sky);
+    theme.ink2 = mostLegible([from.ink2, to.ink2, ...inks], theme.sky);
+  } else {
+    theme.ink = blend("ink", p);
+    theme.ink2 = blend("ink2", p);
+  }
+  return theme;
+}
+
+function mostLegible(colors: string[], background: string): string {
+  return colors.reduce((best, c) =>
+    contrastRatio(c, background) > contrastRatio(best, background) ? c : best,
+  );
+}
+
+/** WCAG contrast ratio between two colours ("#rrggbb" or "rgb(a)(…)"). */
+export function contrastRatio(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function luminance(color: string): number {
+  const rgb = color.startsWith("#")
+    ? [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16))
+    : (color.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+  const [r, g, b] = rgb.map((c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 /** Font families loaded in the root layout (see `src/app/_layout.tsx`). */

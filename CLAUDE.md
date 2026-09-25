@@ -23,9 +23,11 @@ src/
     domain/            pure logic and types, no React or I/O (easy to unit-test)
     mock/              fake data used when EXPO_PUBLIC_DATA_SOURCE=mock
     ui/                screens and components for the feature
-  components/          UI shared across features (tab bar, placeholder screen)
-  constants/theme.ts   time-of-day palettes (PhaseThemes), font families
-  hooks/               shared hooks (useNow, usePhase)
+  domain/              shared pure logic: Auckland time, sky model (suncalc sun/moon, day progress)
+  components/          UI shared across features (tab bar, placeholder screen, query provider)
+  constants/theme.ts   time-of-day palettes (PhaseThemes), blendTheme, font families
+  hooks/               shared hooks (useNow, useSky, useAppActive)
+jest/                  Jest setup (Reanimated test utils) and stubs
 scripts/at-spike/      standalone Node script for exploring the AT API (its own package)
 ```
 

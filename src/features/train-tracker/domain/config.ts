@@ -1,4 +1,4 @@
-import { MINUTE } from "@/features/train-tracker/domain/time";
+import { MINUTE } from "@/domain/time";
 
 /** Sunnyvale platform 1, city-bound. stop_code is stable; stop_id is not. */
 export const HOME_STOP_CODE = "9320";
