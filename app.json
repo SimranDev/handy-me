@@ -58,6 +58,12 @@
         "projectId": "de33e1a7-e3cc-42b5-901d-ffc2d5211192"
       }
     },
-    "owner": "simarexpo"
+    "owner": "simarexpo",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/de33e1a7-e3cc-42b5-901d-ffc2d5211192"
+    }
   }
 }
