@@ -1,0 +1,18 @@
+{
+  "name": "at-spike",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "stations": "tsx src/stations.ts",
+    "watch": "tsx src/watch.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
