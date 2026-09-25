@@ -24,6 +24,8 @@ export type ArrivalStatus =
 export type Arrival = {
   tripId: string;
   serviceDate: string;
+  /** Position of our stop in the trip (1-based). */
+  stopSequence: number;
   headsign: string;
   /** Timetabled departure from our stop. */
   scheduledMs: number;
@@ -40,6 +42,18 @@ export type Arrivals = {
   next: Arrival | null;
   /** Every other upcoming train (including cancelled ones), soonest first. */
   afterNext: Arrival[];
+  /**
+   * Only looked up when there is no `next`: the first train after the
+   * tracked ones, or null if there's none today or tomorrow morning.
+   * Undefined when the source doesn't look (the mock).
+   */
+  later?: LaterTrain | null;
+};
+
+export type LaterTrain = {
+  scheduledMs: number;
+  /** True when today's service is over and this is the next day's first train. */
+  nextServiceDay: boolean;
 };
 
 export const NO_ARRIVALS: Arrivals = {
@@ -67,6 +81,7 @@ export function estimateArrival(
   const base: Arrival = {
     tripId: trip.trip_id,
     serviceDate: trip.service_date,
+    stopSequence: trip.stop_sequence,
     headsign: trip.stop_headsign ?? trip.trip_headsign,
     scheduledMs: trip.scheduledMs,
     etaMs: trip.scheduledMs,
@@ -161,6 +176,24 @@ export function pickTrackedTrips(
     ...window.filter((t) => t.scheduledMs < nowMs).slice(-TRACKED_PAST),
     ...window.filter((t) => t.scheduledMs >= nowMs).slice(0, TRACKED_UPCOMING),
   ];
+}
+
+/**
+ * The first boardable train after `nowMs` that isn't already tracked, from
+ * batches in the order of laterTripQueries.
+ */
+export function pickLaterTrain(
+  batches: { trips: ScheduledTrip[]; nextServiceDay: boolean }[],
+  nowMs: number,
+  trackedIds: ReadonlySet<string>,
+): LaterTrain | null {
+  for (const { trips, nextServiceDay } of batches) {
+    const first = trips
+      .filter((t) => t.scheduledMs > nowMs && !trackedIds.has(t.trip_id))
+      .sort((a, b) => a.scheduledMs - b.scheduledMs)[0];
+    if (first) return { scheduledMs: first.scheduledMs, nextServiceDay };
+  }
+  return null;
 }
 
 export function buildArrivals(

@@ -1,5 +1,6 @@
 import {
   aucklandParts,
+  formatAgo,
   formatClock,
   gtfsTimeToMs,
   previousDate,
@@ -58,4 +59,16 @@ it("formatClock renders HH:MM in Auckland time", () => {
 it("previousDate crosses month and year boundaries", () => {
   expect(previousDate("2026-10-01")).toBe("2026-09-30");
   expect(previousDate("2027-01-01")).toBe("2026-12-31");
+});
+
+describe("formatAgo", () => {
+  it.each([
+    [0, "just now"],
+    [59_000, "just now"],
+    [60_000, "1 min ago"],
+    [59 * 60_000, "59 min ago"],
+    [2.5 * 3_600_000, "2 h ago"],
+  ])("%p ms → %p", (ms, text) => {
+    expect(formatAgo(ms)).toBe(text);
+  });
 });

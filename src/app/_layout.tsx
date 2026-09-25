@@ -41,6 +41,17 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         {/* Hidden: opened by long-pressing the Commute tab. */}
         <Stack.Screen name="dev" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="profiles"
+          options={{
+            presentation: "formSheet",
+            sheetAllowedDetents: "fitToContents",
+            sheetGrabberVisible: true,
+            sheetCornerRadius: 24,
+          }}
+        />
+        <Stack.Screen name="profile" options={{ presentation: "modal" }} />
+        <Stack.Screen name="station" options={{ presentation: "modal" }} />
       </Stack>
     </QueryProvider>
   );

@@ -1,9 +1,16 @@
 import { getApiKey } from "@/features/train-tracker/api/api-key";
+import {
+  devProxyAvailable,
+  devProxyBaseUrl,
+} from "@/features/train-tracker/api/dev-proxy";
+import type { ApiKeyCheck } from "@/features/train-tracker/domain/api-key-format";
 
 const BASE_URL = "https://api.at.govt.nz";
 const MAX_ATTEMPTS = 3;
 const BASE_BACKOFF_MS = 1_000;
 const MAX_BACKOFF_MS = 10_000;
+/** A request that takes longer than this counts as a network failure. */
+const TIMEOUT_MS = 15_000;
 
 export type AtErrorKind =
   "missing-key" | "unauthorized" | "rate-limited" | "network" | "http";
@@ -22,7 +29,9 @@ export class AtApiError extends Error {
 
 /**
  * GET an AT API path and parse the JSON. The key is read from secure store
- * for each request and sent only as a header. 429 and 5xx responses and
+ * for each request and sent only as a header. In development with no saved
+ * key, the request goes through the dev server's proxy, which adds the key
+ * from .env (see dev-proxy.ts). 429 and 5xx responses and
  * network failures are retried with exponential backoff (honouring
  * Retry-After); 401/403 fail immediately.
  */
@@ -34,17 +43,16 @@ export async function atGet<T>(
 
   for (let attempt = 1; ; attempt++) {
     const key = await getApiKey();
-    if (!key) throw new AtApiError("missing-key", "No AT API key is saved.");
+    const base = key
+      ? BASE_URL
+      : (await devProxyAvailable())
+        ? devProxyBaseUrl()
+        : null;
+    if (!base) throw new AtApiError("missing-key", "No AT API key is saved.");
 
     let res: Response;
     try {
-      res = await fetch(BASE_URL + pathAndQuery, {
-        headers: {
-          "Ocp-Apim-Subscription-Key": key,
-          Accept: "application/json",
-        },
-        signal,
-      });
+      res = await send(base + pathAndQuery, key, signal);
     } catch (err) {
       if (signal?.aborted) throw err;
       if (attempt >= MAX_ATTEMPTS) {
@@ -85,6 +93,54 @@ export async function atGet<T>(
           `AT API ${res.status} for ${endpoint}.`,
           res.status,
         );
+  }
+}
+
+/**
+ * Try a key the user typed, before it's saved, with one call to the tiny
+ * GTFS versions endpoint. Not retried: the user is waiting and can try again.
+ */
+export async function verifyApiKey(
+  candidate: string,
+  signal?: AbortSignal,
+): Promise<ApiKeyCheck> {
+  let res: Response;
+  try {
+    res = await send(`${BASE_URL}/gtfs/v3/versions`, candidate.trim(), signal);
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return "network";
+  }
+  if (res.ok) return "valid";
+  if (res.status === 401 || res.status === 403) return "invalid";
+  if (res.status === 429) return "rate-limited";
+  return "unavailable";
+}
+
+/**
+ * One GET, aborted after TIMEOUT_MS. The key goes only in the header; it's
+ * null for the dev proxy, which adds its own.
+ */
+async function send(
+  url: string,
+  key: string | null,
+  signal?: AbortSignal,
+): Promise<Response> {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  const timer = setTimeout(abort, TIMEOUT_MS);
+  signal?.addEventListener("abort", abort, { once: true });
+  if (signal?.aborted) abort();
+  try {
+    return await fetch(url, {
+      headers: key
+        ? { "Ocp-Apim-Subscription-Key": key, Accept: "application/json" }
+        : { Accept: "application/json" },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", abort);
   }
 }
 

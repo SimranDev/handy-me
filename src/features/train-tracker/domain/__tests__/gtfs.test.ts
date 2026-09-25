@@ -2,7 +2,10 @@ import {
   fixtureSchedule,
   fixtureStopTrips,
 } from "@/features/train-tracker/domain/__fixtures__/at-samples";
+import { fixturePlatformTrips } from "@/features/train-tracker/domain/__fixtures__/station-samples";
 import {
+  boardableTrips,
+  laterTripQueries,
   mergeSchedules,
   stopTripQueries,
 } from "@/features/train-tracker/domain/gtfs";
@@ -62,5 +65,49 @@ describe("mergeSchedules", () => {
       fixtureStopTrips.slice(2),
     ]);
     expect(merged).toHaveLength(fixtureStopTrips.length);
+  });
+});
+
+describe("laterTripQueries", () => {
+  it("looks at the rest of the service day, then the next morning", () => {
+    expect(laterTripQueries(at("2026-09-26T21:10:00+12:00"))).toEqual([
+      {
+        query: { date: "2026-09-26", startHour: 21, hourRange: 7 },
+        nextServiceDay: false,
+      },
+      {
+        query: { date: "2026-09-27", startHour: 1, hourRange: 12 },
+        nextServiceDay: true,
+      },
+    ]);
+  });
+
+  it("after midnight, looks only at the new day", () => {
+    expect(laterTripQueries(at("2026-09-27T01:30:00+12:00"))).toEqual([
+      {
+        query: { date: "2026-09-27", startHour: 1, hourRange: 12 },
+        nextServiceDay: true,
+      },
+    ]);
+  });
+});
+
+describe("boardableTrips", () => {
+  const swanson = fixturePlatformTrips["9328"];
+
+  it("drops trips that end here", () => {
+    const trips = boardableTrips(swanson, null);
+    expect(trips).toHaveLength(3);
+    expect(trips.every((t) => t.pickup_type !== 1)).toBe(true);
+  });
+
+  it("keeps only the chosen direction", () => {
+    const both = [
+      ...fixturePlatformTrips["9320"],
+      ...fixturePlatformTrips["9321"],
+    ];
+    expect(boardableTrips(both, 0).map((t) => t.stop_headsign)).toEqual(
+      fixturePlatformTrips["9321"].map((t) => t.stop_headsign),
+    );
   });
 });

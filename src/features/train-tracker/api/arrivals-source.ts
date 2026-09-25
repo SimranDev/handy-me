@@ -1,16 +1,30 @@
-import { DATA_SOURCE } from "@/features/train-tracker/api/data-source";
+import type { DataSource } from "@/features/train-tracker/api/data-source";
 import { createLiveArrivalsSource } from "@/features/train-tracker/api/live-source";
-import type { ArrivalsSource } from "@/features/train-tracker/domain/arrivals-source";
-import { HOME_STOP_CODE } from "@/features/train-tracker/domain/config";
+import type {
+  ArrivalsSource,
+  CommuteStop,
+} from "@/features/train-tracker/domain/arrivals-source";
 import { createMockArrivalsSource } from "@/features/train-tracker/mock/mock-source";
 
-let source: ArrivalsSource | undefined;
+let current: { key: string; source: ArrivalsSource } | undefined;
 
-/** The arrivals source picked by EXPO_PUBLIC_DATA_SOURCE, created once. */
-export function getArrivalsSource(): ArrivalsSource {
-  source ??=
-    DATA_SOURCE === "live"
-      ? createLiveArrivalsSource(HOME_STOP_CODE)
-      : createMockArrivalsSource();
-  return source;
+/**
+ * The arrivals source for `dataSource` and `stop`, kept (with its caches)
+ * until either changes.
+ */
+export function getArrivalsSource(
+  dataSource: DataSource,
+  stop: CommuteStop,
+): ArrivalsSource {
+  const key = `${dataSource}|${stop.stopCode}|${stop.directionId ?? ""}`;
+  if (current?.key !== key) {
+    current = {
+      key,
+      source:
+        dataSource === "live"
+          ? createLiveArrivalsSource(stop)
+          : createMockArrivalsSource(stop.stopCode),
+    };
+  }
+  return current.source;
 }

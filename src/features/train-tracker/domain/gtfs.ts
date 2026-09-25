@@ -2,7 +2,13 @@ import {
   LOOKAHEAD_MS,
   LOOKBACK_MS,
 } from "@/features/train-tracker/domain/config";
-import { aucklandParts, gtfsTimeToMs, HOUR, previousDate } from "@/domain/time";
+import {
+  aucklandParts,
+  gtfsTimeToMs,
+  HOUR,
+  nextDate,
+  previousDate,
+} from "@/domain/time";
 
 /** Attributes of a GTFS v3 `stop`. */
 export type Stop = {
@@ -18,6 +24,9 @@ export type Stop = {
   stop_lon: number;
 };
 
+export const RAIL = 2;
+export const STATION = 1;
+
 /** Attributes of a GTFS v3 `stoptrip`. */
 export type StopTrip = {
   trip_id: string;
@@ -32,6 +41,8 @@ export type StopTrip = {
   /** e.g. "Manukau via City Centre"; more readable than trip_headsign. */
   stop_headsign?: string;
   service_date: string;
+  /** 1 = no pickup: the trip terminates here and can't be boarded. */
+  pickup_type?: number;
 };
 
 /** A stoptrip with its scheduled departure resolved to an instant. */
@@ -68,6 +79,42 @@ export function stopTripQueries(nowMs: number): StopTripQuery[] {
     });
   }
   return queries;
+}
+
+/**
+ * Queries for the first train after the lookahead window, in order: the rest
+ * of the current service day, then the next one. Before 4am the current
+ * service day is all but over (and was covered by stopTripQueries), so only
+ * the new day is asked about.
+ */
+export function laterTripQueries(
+  nowMs: number,
+): { query: StopTripQuery; nextServiceDay: boolean }[] {
+  const { date, hour } = aucklandParts(nowMs);
+  const morning = (d: string) => ({
+    query: { date: d, startHour: 1, hourRange: 12 },
+    nextServiceDay: true,
+  });
+  if (hour < 4) return [morning(date)];
+  return [
+    {
+      query: { date, startHour: hour, hourRange: 28 - hour },
+      nextServiceDay: false,
+    },
+    morning(nextDate(date)),
+  ];
+}
+
+/** Trips you can board here, optionally only those in one direction. */
+export function boardableTrips<T extends StopTrip>(
+  trips: T[],
+  directionId: number | null,
+): T[] {
+  return trips.filter(
+    (t) =>
+      t.pickup_type !== 1 &&
+      (directionId == null || t.direction_id === directionId),
+  );
 }
 
 /** Merge query results, dropping duplicates, sorted by scheduled departure. */

@@ -70,12 +70,13 @@ const STARS = [
 
 const POSTS = [23, 107, 276];
 
-const STATIONS = [
-  { name: "Swanson", x: 12 },
-  { name: "Ranui", x: 90 },
-  { name: "Sturges Rd", x: 164 },
-  { name: "Henderson", x: 248 },
-];
+/**
+ * Where station labels go, left to right; the train dwells under each (see
+ * TIMELINE in train-track.ts). Stations fill from the right, so the nearest
+ * one always sits next to "You".
+ */
+const STATION_SLOTS = [12, 90, 164, 248];
+const STATION_LABEL_W = 72;
 
 /** Centre of the "You" marker, for the arrival pulse. */
 const YOU = { x: 358.5, y: 374.5 };
@@ -89,6 +90,8 @@ type Props = {
   theme: PhaseTheme;
   /** The train the countdown is about; null when there is none. */
   train: { tripId: string; etaMs: number } | null;
+  /** Up to 4 stations before yours on the line, nearest last. */
+  stations: string[];
   /** Pulse "You" when the train is due within a minute. */
   dueSoon: boolean;
   /** Run animations only while the screen is focused and the app is foregrounded. */
@@ -108,6 +111,7 @@ export function HorizonScene({
   sky,
   theme: t,
   train,
+  stations,
   dueSoon,
   active,
   accessibilityLabel,
@@ -325,12 +329,21 @@ export function HorizonScene({
           </Pressable>
         </Animated.View>
 
-        {STATIONS.map((s) => (
+        {stations.slice(-STATION_SLOTS.length).map((name, i, shown) => (
           <Text
-            key={s.name}
-            style={[styles.station, { left: s.x, color: t.label }]}
+            key={`${i}-${name}`}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.75}
+            style={[
+              styles.station,
+              {
+                left: STATION_SLOTS[STATION_SLOTS.length - shown.length + i],
+                color: t.label,
+              },
+            ]}
           >
-            {s.name}
+            {name}
           </Text>
         ))}
         <Text style={[styles.station, styles.you, { color: t.label }]}>
@@ -396,6 +409,7 @@ const styles = StyleSheet.create({
   station: {
     position: "absolute",
     top: 403,
+    maxWidth: STATION_LABEL_W,
     fontFamily: FontFamily.sansMedium,
     fontSize: 12,
     lineHeight: 16,

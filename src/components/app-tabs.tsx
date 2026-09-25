@@ -21,14 +21,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontFamily } from "@/constants/theme";
 import { useSky } from "@/hooks/use-sky";
 
-type Shape = "circle" | "train" | "tbd";
+type Shape = "circle" | "train" | "settings" | "tbd";
 
 const TABS: { name: string; href: Href; label: string; shape: Shape }[] = [
   { name: "today", href: "/today", label: "Today", shape: "circle" },
   { name: "index", href: "/", label: "Commute", shape: "train" },
   { name: "tab-3", href: "/tab-3", label: "Tab 3", shape: "tbd" },
   { name: "tab-4", href: "/tab-4", label: "Tab 4", shape: "tbd" },
-  { name: "tab-5", href: "/tab-5", label: "Tab 5", shape: "tbd" },
+  { name: "settings", href: "/settings", label: "Settings", shape: "settings" },
 ];
 
 const BAR_CONTENT_HEIGHT = 52;
@@ -124,7 +124,7 @@ function TabButton({ label, shape, isFocused, ...props }: TabButtonProps) {
   );
 }
 
-/** Placeholder glyphs from the design: a sun, a train, and a dashed diamond for tabs still TBD. */
+/** Placeholder glyphs from the design: a sun, a train, a dial for settings, and a dashed diamond for tabs still TBD. */
 function TabIcon({
   shape,
   color,
@@ -136,6 +136,18 @@ function TabIcon({
 }) {
   if (shape === "tbd") {
     return <View style={[styles.tbd, { borderColor: color }]} />;
+  }
+  if (shape === "settings") {
+    return (
+      <View style={[styles.dial, { borderColor: color }]}>
+        <View
+          style={[
+            filled ? styles.dialHubFilled : styles.dialHub,
+            { backgroundColor: color },
+          ]}
+        />
+      </View>
+    );
   }
   return (
     <View
@@ -192,6 +204,24 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 7,
     borderBottomRightRadius: 1,
     borderBottomLeftRadius: 1,
+  },
+  dial: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1.8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dialHub: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+  },
+  dialHubFilled: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   tbd: {
     width: 15,

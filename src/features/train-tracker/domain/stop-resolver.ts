@@ -18,16 +18,14 @@ type LoadStop = (
 /**
  * Resolves a stable stop_code to that day's stop_id (which carries a GTFS
  * version hash and changes when AT publishes a new feed). Results are cached
- * for the current service day only; failures are not cached.
+ * for the current service day only; failures are not cached. `forget` drops
+ * a cached stop, e.g. when its stop_id stops returning trips mid-day.
  */
 export function createStopResolver(load: LoadStop) {
   let day = "";
   const cache = new Map<string, Promise<Stop>>();
 
-  return function resolveStop(
-    stopCode: string,
-    serviceDate: string,
-  ): Promise<Stop> {
+  function resolveStop(stopCode: string, serviceDate: string): Promise<Stop> {
     if (serviceDate !== day) {
       cache.clear();
       day = serviceDate;
@@ -44,5 +42,9 @@ export function createStopResolver(load: LoadStop) {
       if (cache.get(stopCode) === pending) cache.delete(stopCode);
     });
     return pending;
-  };
+  }
+
+  return Object.assign(resolveStop, {
+    forget: (stopCode: string) => cache.delete(stopCode),
+  });
 }

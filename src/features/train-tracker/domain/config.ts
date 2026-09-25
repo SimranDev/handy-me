@@ -1,11 +1,5 @@
 import { MINUTE } from "@/domain/time";
 
-/** Sunnyvale platform 1, city-bound. stop_code is stable; stop_id is not. */
-export const HOME_STOP_CODE = "9320";
-
-/** Assumed walk from home to the platform. */
-export const WALK_MINUTES = 7;
-
 /** How far ahead to look for trains. */
 export const LOOKAHEAD_MS = 120 * MINUTE;
 /** How far back to keep trips, so late-running and just-departed trains stay visible. */
@@ -20,3 +14,13 @@ export const SCHEDULE_TTL_MS = 10 * MINUTE;
 /** Trips sent to the realtime feed: recent departures plus the next few. */
 export const TRACKED_PAST = 2;
 export const TRACKED_UPCOMING = 3;
+
+/** Stations drawn on the line before yours. */
+export const SCENE_STATIONS = 4;
+
+/**
+ * Trips sampled to find which directions a platform serves: a daytime window
+ * gives a representative mix of services whatever the time now.
+ */
+export const DIRECTION_SAMPLE_START_HOUR = 6;
+export const DIRECTION_SAMPLE_HOUR_RANGE = 12;

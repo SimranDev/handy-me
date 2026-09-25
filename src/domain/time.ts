@@ -71,6 +71,14 @@ export function formatClock(ms: number): string {
   return `${pad(p.hour)}:${pad(p.minute)}`;
 }
 
+/** "just now", "4 min ago", "2 h ago". */
+export function formatAgo(elapsedMs: number): string {
+  const mins = Math.floor(elapsedMs / MINUTE);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  return `${Math.floor(mins / 60)} h ago`;
+}
+
 export function previousDate(date: string): string {
   const [y, m, d] = date.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10);

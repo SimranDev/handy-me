@@ -2,15 +2,18 @@ import { buildArrivals } from "@/features/train-tracker/domain/arrivals";
 import type { ArrivalsSource } from "@/features/train-tracker/domain/arrivals-source";
 import type { ScheduledTrip } from "@/features/train-tracker/domain/gtfs";
 import type { TripUpdate } from "@/features/train-tracker/domain/realtime";
+import type { TripStop } from "@/features/train-tracker/domain/upstream";
 import { aucklandParts, MINUTE } from "@/domain/time";
 
 const HEADWAY = 15 * MINUTE;
 const OUR_STOP_SEQUENCE = 5;
 const HEADSIGNS = ["Manukau via City Centre", "Onehunga via Grafton"];
+/** Stand-in stations every mock trip calls at before the user's stop. */
+const MOCK_UPSTREAM = ["Swanson", "Ranui", "Sturges Rd", "Henderson"];
 
 /**
- * Stand-in timetable: the first train reaches Sunnyvale 9 minutes after
- * launch, then one every 15 minutes. Anchored at module load so it survives
+ * Stand-in timetable: the first train reaches the user's stop 9 minutes
+ * after launch, then one every 15 minutes. Anchored at module load so it survives
  * remounts.
  */
 const FIRST_ARRIVAL = Date.now() + 9 * MINUTE;
@@ -24,7 +27,7 @@ function nextArrival(nowMs: number): number {
   );
 }
 
-function mockTrip(scheduledMs: number): ScheduledTrip {
+function mockTrip(scheduledMs: number, stopCode: string): ScheduledTrip {
   const p = aucklandParts(scheduledMs);
   const time = [p.hour, p.minute, p.second]
     .map((n) => String(n).padStart(2, "0"))
@@ -37,7 +40,7 @@ function mockTrip(scheduledMs: number): ScheduledTrip {
     direction_id: 1,
     arrival_time: time,
     departure_time: time,
-    stop_id: "mock-stop",
+    stop_id: `mock-${stopCode}`,
     stop_sequence: OUR_STOP_SEQUENCE,
     trip_headsign: headsign,
     stop_headsign: headsign,
@@ -70,7 +73,7 @@ function mockUpdate(
  * next is live and on time, the one after is 2 min late, and the rest are
  * timetable-only.
  */
-export function createMockArrivalsSource(): ArrivalsSource {
+export function createMockArrivalsSource(stopCode: string): ArrivalsSource {
   return {
     async getArrivals(nowMs) {
       const arrival = nextArrival(nowMs);
@@ -80,7 +83,7 @@ export function createMockArrivalsSource(): ArrivalsSource {
         arrival + HEADWAY,
         arrival + 2 * HEADWAY,
         arrival + 3 * HEADWAY,
-      ].map(mockTrip);
+      ].map((ms) => mockTrip(ms, stopCode));
 
       const updates = new Map<string, TripUpdate>([
         [gone.trip_id, mockUpdate(gone, OUR_STOP_SEQUENCE + 3, 0, nowMs)],
@@ -88,6 +91,18 @@ export function createMockArrivalsSource(): ArrivalsSource {
         [late.trip_id, mockUpdate(late, 1, 120, nowMs)],
       ]);
       return buildArrivals([gone, next, late, ...later], updates, nowMs);
+    },
+
+    async getTripStops() {
+      const stops: TripStop[] = MOCK_UPSTREAM.map((name, i) => ({
+        stop_id: `mock-up-${i}`,
+        stop_code: `mock-up-${i}`,
+        stop_name: `${name} Train Station 1`,
+      }));
+      return [
+        ...stops,
+        { stop_id: `mock-${stopCode}`, stop_code: stopCode, stop_name: "You" },
+      ];
     },
   };
 }

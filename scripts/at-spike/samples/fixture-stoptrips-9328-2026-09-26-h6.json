@@ -1,0 +1,124 @@
+{
+  "data": [
+    {
+      "type": "stoptrip",
+      "id": "stop:9328-f6f84eac_trip:258-880002-22080-2-W019540-75d9f99d",
+      "attributes": {
+        "arrival_time": "06:08:00",
+        "departure_time": "06:08:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9328-f6f84eac",
+        "stop_sequence": 1,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-22080-2-W019540-75d9f99d",
+        "trip_start_time": "06:08:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9328-f6f84eac_trip:258-880002-22980-2-W023570-480f41dd",
+      "attributes": {
+        "arrival_time": "06:23:00",
+        "departure_time": "06:23:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9328-f6f84eac",
+        "stop_sequence": 1,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-22980-2-W023570-480f41dd",
+        "trip_start_time": "06:23:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9328-f6f84eac_trip:258-880002-23880-2-W025590-7cf89c5a",
+      "attributes": {
+        "arrival_time": "06:38:00",
+        "departure_time": "06:38:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9328-f6f84eac",
+        "stop_sequence": 1,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-23880-2-W025590-7cf89c5a",
+        "trip_start_time": "06:38:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9328-f6f84eac_trip:258-880001-19980-2-W008520-9009280c",
+      "attributes": {
+        "arrival_time": "07:02:00",
+        "departure_time": "07:02:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 1,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9328-f6f84eac",
+        "stop_sequence": 27,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-19980-2-W008520-9009280c",
+        "trip_start_time": "05:33:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9328-f6f84eac_trip:258-880001-21780-2-W014560-b5972f30",
+      "attributes": {
+        "arrival_time": "07:32:00",
+        "departure_time": "07:32:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 1,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9328-f6f84eac",
+        "stop_sequence": 27,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-21780-2-W014560-b5972f30",
+        "trip_start_time": "06:03:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9328-f6f84eac_trip:258-880001-22680-2-W016550-b9e483a3",
+      "attributes": {
+        "arrival_time": "07:47:00",
+        "departure_time": "07:47:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 1,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9328-f6f84eac",
+        "stop_sequence": 27,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-22680-2-W016550-b9e483a3",
+        "trip_start_time": "06:18:00"
+      }
+    }
+  ]
+}

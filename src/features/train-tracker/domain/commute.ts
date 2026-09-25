@@ -2,7 +2,7 @@ import type {
   Arrival,
   Arrivals,
 } from "@/features/train-tracker/domain/arrivals";
-import { WALK_MINUTES } from "@/features/train-tracker/domain/config";
+import { JUST_DEPARTED_MS } from "@/features/train-tracker/domain/config";
 import { formatClock, MINUTE } from "@/domain/time";
 
 export type DepartureRow = {
@@ -19,6 +19,8 @@ export type CommutePlan = {
   minsLabel: string;
   /** Scheduled time of the target train, e.g. "20:44"; null when there is none. */
   arrivalLabel: string | null;
+  /** Line under the countdown, e.g. "until the 20:44 reaches Sunnyvale". */
+  untilLabel: string;
   leaveTitle: string;
   leaveSub: string;
   rows: DepartureRow[];
@@ -30,46 +32,61 @@ export type CommutePlan = {
   sceneLabel: string;
 };
 
+export type CommuteOptions = {
+  /** The train the user tapped; if it has gone (or was cancelled) the next train is used. */
+  pickedTripId?: string | null;
+  /** Minutes from home to the platform. */
+  walkMinutes: number;
+  /** Short name of the user's station, e.g. "Sunnyvale". */
+  stationName: string;
+};
+
 const MAX_ROWS = 3;
 
 /**
- * What to show on the commute screen at `nowMs`. `pickedTripId` is the train
- * the user tapped; if it has gone (or was cancelled) the next train is used.
+ * A train whose ETA passed this long ago has gone, even if the data (say,
+ * from before going offline) still lists it as upcoming.
  */
+const PASSED_GRACE_MS = MINUTE;
+
+const nonNull = <T>(a: T | null): a is T => a != null;
+
+/** What to show on the commute screen at `nowMs`. */
 export function planCommute(
   nowMs: number,
   arrivals: Arrivals,
-  pickedTripId?: string | null,
+  { pickedTripId, walkMinutes, stationName }: CommuteOptions,
 ): CommutePlan {
-  const { justDeparted, next, afterNext } = arrivals;
-  const catchable = [next, ...afterNext].filter(
-    (a): a is Arrival => a != null && a.status.kind !== "cancelled",
-  );
-  const target = catchable.find((a) => a.tripId === pickedTripId) ?? next;
+  const listed = [arrivals.next, ...arrivals.afterNext].filter(nonNull);
+  const passed = (a: Arrival) => a.etaMs < nowMs - PASSED_GRACE_MS;
+  const upcoming = listed.filter((a) => !passed(a));
+  const justDeparted =
+    [
+      arrivals.justDeparted,
+      ...listed.filter((a) => a.status.kind !== "cancelled" && passed(a)),
+    ]
+      .filter(nonNull)
+      .filter((a) => a.etaMs >= nowMs - JUST_DEPARTED_MS)
+      .sort((a, b) => a.etaMs - b.etaMs)
+      .at(-1) ?? null;
+
+  const catchable = upcoming.filter((a) => a.status.kind !== "cancelled");
+  const target =
+    catchable.find((a) => a.tripId === pickedTripId) ?? catchable[0];
   const minsUntil = (a: Arrival) =>
     Math.max(0, Math.ceil((a.etaMs - nowMs) / MINUTE));
 
-  const rows = [justDeparted, next, ...afterNext]
+  const rows = [justDeparted, ...upcoming]
     .filter((a): a is Arrival => a != null && a.tripId !== target?.tripId)
     .slice(0, MAX_ROWS)
     .map((a) => rowFor(a, a === justDeparted, nowMs, minsUntil(a)));
 
   if (!target) {
-    return {
-      targetTripId: null,
-      minsLabel: "No trains",
-      arrivalLabel: null,
-      leaveTitle: "Nothing to catch.",
-      leaveSub: "No trains are due in the next two hours.",
-      rows,
-      targetEtaMs: null,
-      leaveMinutes: null,
-      sceneLabel: "No trains in the next two hours",
-    };
+    return { ...noTrainPlan(arrivals.later), rows };
   }
 
   const mins = minsUntil(target);
-  const leave = mins - WALK_MINUTES;
+  const leave = mins - walkMinutes;
   const later = catchable[catchable.indexOf(target) + 1];
 
   let leaveTitle: string;
@@ -96,6 +113,7 @@ export function planCommute(
     minsLabel:
       mins === 0 ? "Arriving" : mins === 1 ? "1 minute" : `${mins} minutes`,
     arrivalLabel: formatClock(target.scheduledMs),
+    untilLabel: `until the ${formatClock(target.scheduledMs)} reaches ${stationName}`,
     leaveTitle,
     leaveSub,
     rows,
@@ -106,6 +124,51 @@ export function planCommute(
         ? `Train arriving now, departs ${formatClock(target.etaMs)}`
         : `Train ${mins} minute${mins === 1 ? "" : "s"} away, arrives ${formatClock(target.etaMs)}`,
   };
+}
+
+function noTrainPlan(later: Arrivals["later"]): Omit<CommutePlan, "rows"> {
+  const none = {
+    targetTripId: null,
+    minsLabel: "No trains",
+    arrivalLabel: null,
+    targetEtaMs: null,
+    leaveMinutes: null,
+  };
+  if (later === undefined) {
+    return {
+      ...none,
+      untilLabel: "due in the next two hours",
+      leaveTitle: "Nothing to catch.",
+      leaveSub: "No trains are due in the next two hours.",
+      sceneLabel: "No trains in the next two hours",
+    };
+  }
+  if (later === null) {
+    return {
+      ...none,
+      untilLabel: "no more today",
+      leaveTitle: "No more trains today.",
+      leaveSub:
+        "None are timetabled for tomorrow morning either. Check Auckland Transport for service changes.",
+      sceneLabel: "No more trains today",
+    };
+  }
+  const at = formatClock(later.scheduledMs);
+  return later.nextServiceDay
+    ? {
+        ...none,
+        untilLabel: `first train at ${at}`,
+        leaveTitle: "No more trains today.",
+        leaveSub: `The first train leaves at ${at}.`,
+        sceneLabel: `No more trains today. The first train leaves at ${at}`,
+      }
+    : {
+        ...none,
+        untilLabel: `next train at ${at}`,
+        leaveTitle: "Nothing for a while.",
+        leaveSub: `No trains are due in the next two hours. The next leaves at ${at}.`,
+        sceneLabel: `No trains in the next two hours. The next leaves at ${at}`,
+      };
 }
 
 function rowFor(

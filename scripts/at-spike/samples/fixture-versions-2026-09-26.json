@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "type": "feed_info",
+      "attributes": {
+        "feed_end_date": "20261231",
+        "feed_publisher_name": "Auckland Transport",
+        "feed_publisher_url": "http://www.aucklandtransport.govt.nz",
+        "feed_start_date": "20260917",
+        "feed_version": "VDV_Merge_118_5_H_7_331.08584113514311661810347857525CU60"
+      }
+    }
+  ]
+}

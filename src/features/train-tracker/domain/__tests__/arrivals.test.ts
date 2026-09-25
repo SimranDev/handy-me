@@ -8,6 +8,7 @@ import {
 import {
   buildArrivals,
   estimateArrival,
+  pickLaterTrain,
   pickTrackedTrips,
 } from "@/features/train-tracker/domain/arrivals";
 import type { TripUpdate } from "@/features/train-tracker/domain/realtime";
@@ -47,6 +48,7 @@ describe("buildArrivals with the captured snapshot", () => {
     expect(arrivals.next).toEqual({
       tripId: TRIPS.approaching,
       serviceDate: "2026-09-25",
+      stopSequence: 5,
       headsign: "Manukau via City Centre",
       scheduledMs: trip.scheduledMs,
       etaMs: trip.scheduledMs + 9_000, // trip-level delay, not the stop's 21s
@@ -187,5 +189,43 @@ describe("justDeparted", () => {
       etaMs: scheduledTrip(TRIPS.passed).scheduledMs + 97_000,
     });
     expect(arrivals.next?.tripId).toBe(TRIPS.departedNoRealtime);
+  });
+});
+
+describe("pickLaterTrain", () => {
+  const trips = fixtureSchedule; // 23:04 … 24:34 on 2026-09-25
+  const tracked = new Set([TRIPS.approaching]);
+
+  it("finds the first untracked train after now", () => {
+    expect(
+      pickLaterTrain([{ trips, nextServiceDay: false }], fixtureNowMs, tracked),
+    ).toEqual({
+      scheduledMs: scheduledTrip(TRIPS.stale).scheduledMs,
+      nextServiceDay: false,
+    });
+  });
+
+  it("moves on to the next service day when today has none left", () => {
+    const afterLast = Math.max(...trips.map((t) => t.scheduledMs)) + 1;
+    expect(
+      pickLaterTrain(
+        [
+          { trips, nextServiceDay: false },
+          { trips: fixtureSchedule.slice(0, 1), nextServiceDay: true },
+        ],
+        afterLast,
+        tracked,
+      ),
+    ).toBeNull();
+    expect(
+      pickLaterTrain(
+        [
+          { trips: [], nextServiceDay: false },
+          { trips, nextServiceDay: true },
+        ],
+        fixtureNowMs,
+        tracked,
+      ),
+    ).toMatchObject({ nextServiceDay: true });
   });
 });

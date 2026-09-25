@@ -16,6 +16,12 @@ import { FontFamily, type PhaseTheme } from "@/constants/theme";
 import { aucklandParts, formatClock, HOUR, MINUTE } from "@/domain/time";
 import { skyPresets } from "@/features/dev-menu/domain/sky-presets";
 import {
+  type DataSource,
+  ENV_DATA_SOURCE,
+  setDataSource,
+  useDataSource,
+} from "@/features/train-tracker/api/data-source";
+import {
   clearSkyPreview,
   pauseSkyPreview,
   PLAY_DAY_MS,
@@ -24,6 +30,11 @@ import {
   useSkyPreview,
 } from "@/hooks/sky-preview";
 import { useSky } from "@/hooks/use-sky";
+
+const DATA_SOURCES: { value: DataSource; label: string; sub: string }[] = [
+  { value: "mock", label: "Mock", sub: "Built-in timetable" },
+  { value: "live", label: "Live", sub: "Auckland Transport" },
+];
 
 const NUDGES = [
   { label: "−1 h", ms: -HOUR },
@@ -36,6 +47,7 @@ const NUDGES = [
 export function DevMenuScreen() {
   const { now, sky, theme: t } = useSky(1000);
   const preview = useSkyPreview();
+  const dataSource = useDataSource();
   const insets = useSafeAreaInsets();
 
   const shown = preview.at ?? now;
@@ -141,6 +153,27 @@ export function DevMenuScreen() {
       <Text style={[styles.footnote, { color: t.muted }]}>
         Previews only change the sky and colours. Train times stay real. Closing
         the app returns to real time.
+      </Text>
+
+      <Section title="Train data" theme={t}>
+        <View style={styles.row}>
+          {DATA_SOURCES.map((source) => (
+            <Chip
+              key={source.value}
+              theme={t}
+              label={source.label}
+              sub={source.sub}
+              selected={dataSource === source.value}
+              style={styles.rowChip}
+              onPress={tap(() => setDataSource(source.value))}
+            />
+          ))}
+        </View>
+      </Section>
+
+      <Text style={[styles.footnote, { color: t.muted }]}>
+        Live needs an API key and a station in Settings. Closing the app returns
+        to the .env default ({ENV_DATA_SOURCE}).
       </Text>
     </ScrollView>
   );

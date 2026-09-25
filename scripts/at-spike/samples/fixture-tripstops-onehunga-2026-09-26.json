@@ -1,0 +1,308 @@
+{
+  "data": [
+    {
+      "type": "stop",
+      "id": "9330-af594dbe",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "125-0874efac",
+        "platform_code": "2",
+        "stop_code": "9330",
+        "stop_id": "9330-af594dbe",
+        "stop_lat": -36.88193,
+        "stop_lon": 174.63092,
+        "stop_name": "Henderson Train Station 2",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9320-36be46d2",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "121-5413495e",
+        "platform_code": "1",
+        "stop_code": "9320",
+        "stop_id": "9320-36be46d2",
+        "stop_lat": -36.89686,
+        "stop_lon": 174.632,
+        "stop_name": "Sunnyvale Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9318-c8c09d1b",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "124-72ac2d54",
+        "platform_code": "1",
+        "stop_code": "9318",
+        "stop_id": "9318-c8c09d1b",
+        "stop_lat": -36.91027,
+        "stop_lon": 174.65317,
+        "stop_name": "Glen Eden Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9316-2ac0d8cb",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "123-02f15431",
+        "platform_code": "1",
+        "stop_code": "9316",
+        "stop_id": "9316-2ac0d8cb",
+        "stop_lat": -36.91066,
+        "stop_lon": 174.66706,
+        "stop_name": "Fruitvale Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9314-15d82116",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "129-f22f268a",
+        "platform_code": "1",
+        "stop_code": "9314",
+        "stop_id": "9314-15d82116",
+        "stop_lat": -36.90938,
+        "stop_lon": 174.68405,
+        "stop_name": "New Lynn Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9312-e5a780ea",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "105-474861ff",
+        "platform_code": "1",
+        "stop_code": "9312",
+        "stop_id": "9312-e5a780ea",
+        "stop_lat": -36.89714,
+        "stop_lon": 174.6991,
+        "stop_name": "Avondale Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9310-5e7a27e9",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "120-848dea07",
+        "platform_code": "1",
+        "stop_code": "9310",
+        "stop_id": "9310-5e7a27e9",
+        "stop_lat": -36.88477,
+        "stop_lon": 174.71408,
+        "stop_name": "Mt Albert Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9308-490884bd",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "119-de6ec4e8",
+        "platform_code": "1",
+        "stop_code": "9308",
+        "stop_id": "9308-490884bd",
+        "stop_lat": -36.87767,
+        "stop_lon": 174.72045,
+        "stop_name": "Baldwin Ave Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9306-949f35aa",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "104-ff3dff29",
+        "platform_code": "1",
+        "stop_code": "9306",
+        "stop_id": "9306-949f35aa",
+        "stop_lat": -36.87498,
+        "stop_lon": 174.73521,
+        "stop_name": "Morningside Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9304-dcb2ed75",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "122-34ecc043",
+        "platform_code": "1",
+        "stop_code": "9304",
+        "stop_id": "9304-dcb2ed75",
+        "stop_lat": -36.8725,
+        "stop_lon": 174.74453,
+        "stop_name": "Kingsland Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9293-7c25c9c7",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "136-2d5b76e2",
+        "platform_code": "3",
+        "stop_code": "9293",
+        "stop_id": "9293-7c25c9c7",
+        "stop_lat": -36.86805,
+        "stop_lon": 174.75973,
+        "stop_name": "Maungawhau Train Station 3",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9300-9efd20bf",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "277-dfb27cf9",
+        "platform_code": "2",
+        "stop_code": "9300",
+        "stop_id": "9300-9efd20bf",
+        "stop_lat": -36.86561,
+        "stop_lon": 174.76984,
+        "stop_name": "Grafton Train Station 2",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9104-87b89d4a",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "115-96c3c7be",
+        "platform_code": "4",
+        "stop_code": "9104",
+        "stop_id": "9104-87b89d4a",
+        "stop_lat": -36.86972,
+        "stop_lon": 174.77885,
+        "stop_name": "Newmarket Train Station 4",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9201-2c983f68",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "114-c06f0e9c",
+        "platform_code": "2",
+        "stop_code": "9201",
+        "stop_id": "9201-2c983f68",
+        "stop_lat": -36.88137,
+        "stop_lon": 174.78544,
+        "stop_name": "Remuera Train Station 2",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9203-7e1926ce",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "113-5a21d646",
+        "platform_code": "2",
+        "stop_code": "9203",
+        "stop_id": "9203-7e1926ce",
+        "stop_lat": -36.88962,
+        "stop_lon": 174.79746,
+        "stop_name": "Greenlane Train Station 2",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9205-388a750f",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "112-15fd1147",
+        "platform_code": "2",
+        "stop_code": "9205",
+        "stop_id": "9205-388a750f",
+        "stop_lat": -36.89845,
+        "stop_lon": 174.80821,
+        "stop_name": "Ellerslie Train Station 2",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9500-e8f9ea3c",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "102-a4eddeea",
+        "platform_code": "3",
+        "stop_code": "9500",
+        "stop_id": "9500-e8f9ea3c",
+        "stop_lat": -36.91098,
+        "stop_lon": 174.81541,
+        "stop_name": "Penrose Train Station 3",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9501-ce4fa451",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "606-fecc85f6",
+        "platform_code": "1",
+        "stop_code": "9501",
+        "stop_id": "9501-ce4fa451",
+        "stop_lat": -36.92013,
+        "stop_lon": 174.80137,
+        "stop_name": "Te Papapa Train Station 1",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    },
+    {
+      "type": "stop",
+      "id": "9503-bcf68071",
+      "attributes": {
+        "location_type": 0,
+        "parent_station": "605-b9605c8e",
+        "platform_code": "1",
+        "stop_code": "9503",
+        "stop_id": "9503-bcf68071",
+        "stop_lat": -36.92539,
+        "stop_lon": 174.7868,
+        "stop_name": "Onehunga Train Station",
+        "vehicle_type": 2,
+        "wheelchair_boarding": 0
+      }
+    }
+  ]
+}

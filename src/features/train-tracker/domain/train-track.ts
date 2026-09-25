@@ -6,18 +6,19 @@
 
 /**
  * The run into our stop: [minutes before our departure, x of the train's
- * nose]. Pairs with equal x are dwells at a station. Timings follow the real
- * Swanson → Sunnyvale run (~11 min).
+ * nose]. Pairs with equal x are dwells at the four station slots drawn in
+ * the scene (STATION_SLOTS in horizon-scene.tsx). Timings follow a typical
+ * four-station run in to a stop (~11 min, e.g. Swanson → Sunnyvale).
  */
 const TIMELINE: readonly (readonly [number, number])[] = [
   [14, -70], // off-stage left
-  [11, 70], // Swanson
+  [11, 70], // 4th station back
   [10.75, 70],
-  [8.5, 135], // Ranui
+  [8.5, 135], // 3rd
   [8.25, 135],
-  [6, 220], // Sturges Rd
+  [6, 220], // 2nd
   [5.75, 220],
-  [3, 300], // Henderson
+  [3, 300], // the station before yours
   [2.75, 300],
   [0, 358], // You (departs at the ETA)
   [-0.5, 358],

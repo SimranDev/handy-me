@@ -1,0 +1,124 @@
+{
+  "data": [
+    {
+      "type": "stoptrip",
+      "id": "stop:9320-36be46d2_trip:258-880002-21180-2-W017530-550e94ea",
+      "attributes": {
+        "arrival_time": "06:04:00",
+        "departure_time": "06:04:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9320-36be46d2",
+        "stop_sequence": 5,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-21180-2-W017530-550e94ea",
+        "trip_start_time": "05:53:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9320-36be46d2_trip:259-860002-22200-2-H007430-ca37e933",
+      "attributes": {
+        "arrival_time": "06:12:00",
+        "departure_time": "06:12:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "O-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "259-860002-6b6c52a7",
+        "stop_headsign": "Onehunga via Grafton",
+        "stop_id": "9320-36be46d2",
+        "stop_sequence": 2,
+        "trip_headsign": "Henderson 2 To Onehunga Via Newmarket 4",
+        "trip_id": "259-860002-22200-2-H007430-ca37e933",
+        "trip_start_time": "06:10:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9320-36be46d2_trip:258-880002-22080-2-W019540-75d9f99d",
+      "attributes": {
+        "arrival_time": "06:19:00",
+        "departure_time": "06:19:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9320-36be46d2",
+        "stop_sequence": 5,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-22080-2-W019540-75d9f99d",
+        "trip_start_time": "06:08:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9320-36be46d2_trip:258-880002-22980-2-W023570-480f41dd",
+      "attributes": {
+        "arrival_time": "06:34:00",
+        "departure_time": "06:34:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9320-36be46d2",
+        "stop_sequence": 5,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-22980-2-W023570-480f41dd",
+        "trip_start_time": "06:23:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9320-36be46d2_trip:259-860002-24000-2-H009400-3fe38185",
+      "attributes": {
+        "arrival_time": "06:42:00",
+        "departure_time": "06:42:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "O-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "259-860002-6b6c52a7",
+        "stop_headsign": "Onehunga via Grafton",
+        "stop_id": "9320-36be46d2",
+        "stop_sequence": 2,
+        "trip_headsign": "Henderson 2 To Onehunga Via Newmarket 4",
+        "trip_id": "259-860002-24000-2-H009400-3fe38185",
+        "trip_start_time": "06:40:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9320-36be46d2_trip:258-880002-23880-2-W025590-7cf89c5a",
+      "attributes": {
+        "arrival_time": "06:49:00",
+        "departure_time": "06:49:00",
+        "direction_id": 1,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880002-bf21076d",
+        "stop_headsign": "Manukau via City Centre",
+        "stop_id": "9320-36be46d2",
+        "stop_sequence": 5,
+        "trip_headsign": "Swanson 1 To Manukau 1 Via Waitemata 1",
+        "trip_id": "258-880002-23880-2-W025590-7cf89c5a",
+        "trip_start_time": "06:38:00"
+      }
+    }
+  ]
+}

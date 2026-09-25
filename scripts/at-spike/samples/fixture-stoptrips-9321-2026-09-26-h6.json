@@ -1,0 +1,124 @@
+{
+  "data": [
+    {
+      "type": "stoptrip",
+      "id": "stop:9321-50b6fd55_trip:259-860001-20220-2-H002400-6c36133f",
+      "attributes": {
+        "arrival_time": "06:27:00",
+        "departure_time": "06:27:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "O-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "259-860001-f60817d2",
+        "stop_headsign": "Henderson",
+        "stop_id": "9321-50b6fd55",
+        "stop_sequence": 18,
+        "trip_headsign": "Onehunga To Henderson 2 Via Newmarket 1",
+        "trip_id": "259-860001-20220-2-H002400-6c36133f",
+        "trip_start_time": "05:37:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9321-50b6fd55_trip:258-880001-19980-2-W008520-9009280c",
+      "attributes": {
+        "arrival_time": "06:48:00",
+        "departure_time": "06:48:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9321-50b6fd55",
+        "stop_sequence": 23,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-19980-2-W008520-9009280c",
+        "trip_start_time": "05:33:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9321-50b6fd55_trip:259-860001-22020-2-H004410-089377c3",
+      "attributes": {
+        "arrival_time": "06:57:00",
+        "departure_time": "06:57:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "O-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "259-860001-f60817d2",
+        "stop_headsign": "Henderson",
+        "stop_id": "9321-50b6fd55",
+        "stop_sequence": 18,
+        "trip_headsign": "Onehunga To Henderson 2 Via Newmarket 1",
+        "trip_id": "259-860001-22020-2-H004410-089377c3",
+        "trip_start_time": "06:07:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9321-50b6fd55_trip:258-880001-21780-2-W014560-b5972f30",
+      "attributes": {
+        "arrival_time": "07:18:00",
+        "departure_time": "07:18:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9321-50b6fd55",
+        "stop_sequence": 23,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-21780-2-W014560-b5972f30",
+        "trip_start_time": "06:03:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9321-50b6fd55_trip:258-880001-22680-2-W016550-b9e483a3",
+      "attributes": {
+        "arrival_time": "07:33:00",
+        "departure_time": "07:33:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9321-50b6fd55",
+        "stop_sequence": 23,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-22680-2-W016550-b9e483a3",
+        "trip_start_time": "06:18:00"
+      }
+    },
+    {
+      "type": "stoptrip",
+      "id": "stop:9321-50b6fd55_trip:258-880001-23580-2-W020580-dd3ccc82",
+      "attributes": {
+        "arrival_time": "07:48:00",
+        "departure_time": "07:48:00",
+        "direction_id": 0,
+        "drop_off_type": 0,
+        "pickup_type": 0,
+        "route_id": "E-W-201",
+        "service_date": "2026-09-26",
+        "shape_id": "258-880001-a7ac99b9",
+        "stop_headsign": "Swanson",
+        "stop_id": "9321-50b6fd55",
+        "stop_sequence": 23,
+        "trip_headsign": "Manukau 1 To Swanson 1 Via Waitemata 4",
+        "trip_id": "258-880001-23580-2-W020580-dd3ccc82",
+        "trip_start_time": "06:33:00"
+      }
+    }
+  ]
+}

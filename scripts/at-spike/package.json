@@ -5,7 +5,8 @@
   "scripts": {
     "stations": "tsx src/stations.ts",
     "watch": "tsx src/watch.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "probe": "tsx src/probe.ts"
   },
   "dependencies": {
     "dotenv": "^18.0.3"
