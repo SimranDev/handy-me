@@ -85,7 +85,7 @@ export function SettingsScreen() {
       automaticallyAdjustKeyboardInsets
     >
       <View style={styles.header}>
-        <Text style={[styles.app, { color: t.muted }]}>Me Simplified</Text>
+        <Text style={[styles.app, { color: t.muted }]}>Handy Me</Text>
         <Text
           accessibilityRole="header"
           style={[styles.title, { color: t.cardInk }]}

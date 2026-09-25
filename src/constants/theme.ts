@@ -29,7 +29,7 @@ export const Fonts = Platform.select({
 });
 
 /**
- * Me Simplified · Horizon palette. The whole app follows the time of day:
+ * Handy Me · Horizon palette. The whole app follows the time of day:
  * each phase recolours the sky scene, the card below it and the tab bar.
  */
 export type Phase = "dawn" | "midday" | "dusk" | "night";

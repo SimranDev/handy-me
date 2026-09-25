@@ -1,8 +1,8 @@
 @AGENTS.md
 
-# Me Simplified
+# Handy Me
 
-A personal "life, simplified" app. The first feature is a train tracker: a commute screen whose sky scene and palette follow the time of day (dawn, midday, dusk, night), showing when to leave for the next train from the user's station. Each commute profile (e.g. "To work", "Gym") has its own station, platform, walk time and destination label. Profiles are created and edited in Settings and switched from the commute screen. Nothing about the commute is hard-coded.
+A personal app of handy everyday tools. The first feature is a train tracker: a commute screen whose sky scene and palette follow the time of day (dawn, midday, dusk, night), showing when to leave for the next train from the user's station. Each commute profile (e.g. "To work", "Gym") has its own station, platform, walk time and destination label. Profiles are created and edited in Settings and switched from the commute screen. Nothing about the commute is hard-coded.
 
 ## Stack
 

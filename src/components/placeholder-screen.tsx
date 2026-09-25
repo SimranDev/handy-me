@@ -25,7 +25,7 @@ export function PlaceholderScreen({ title, note }: Props) {
         },
       ]}
     >
-      <Text style={[styles.app, { color: theme.muted }]}>Me Simplified</Text>
+      <Text style={[styles.app, { color: theme.muted }]}>Handy Me</Text>
       <Text style={[styles.title, { color: theme.cardInk }]}>{title}</Text>
       <View style={[styles.box, { borderColor: theme.rule }]}>
         <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>

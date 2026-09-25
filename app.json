@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "me-simplified",
-    "slug": "me-simplified",
+    "name": "Handy Me",
+    "slug": "handy-me",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mesimplified",
+    "scheme": "handyme",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -18,7 +18,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.simarexpo.mesimplified"
+      "package": "com.simarexpo.handyme"
     },
     "web": {
       "output": "static",
