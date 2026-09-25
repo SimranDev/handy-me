@@ -22,7 +22,10 @@ import Svg, {
   Defs,
   Ellipse,
   G,
+  LinearGradient,
+  Polygon,
   Rect,
+  Stop,
 } from "react-native-svg";
 
 import { FontFamily, type PhaseTheme } from "@/constants/theme";
@@ -45,6 +48,13 @@ const MAX_SCENE_W = 480;
 
 const TRAIN_W = 94;
 const TRAIN_H = 24;
+
+/**
+ * The headlight: a cone from the nose that widens ahead and fades out.
+ * Train coordinates (0,0 is the body's top-left corner).
+ */
+const BEAM = { x: TRAIN_W - 6, w: 84, h: TRAIN_H };
+const BEAM_POINTS = `0,11 ${BEAM.w},3 ${BEAM.w},22 0,16`;
 
 /**
  * Sun and moon travel an arc from the right (east, rising) to the left
@@ -301,8 +311,15 @@ export function HorizonScene({
             pointerEvents="none"
             style={[styles.beam, { opacity: sky.lights }]}
           >
-            <Svg width={62} height={15}>
-              <Ellipse cx={31} cy={7.5} rx={31} ry={7.5} fill={t.beam} />
+            <Svg width={BEAM.w} height={BEAM.h}>
+              <Defs>
+                <LinearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+                  <Stop offset="0" stopColor={t.beam} stopOpacity={0.95} />
+                  <Stop offset="0.45" stopColor={t.beam} stopOpacity={0.5} />
+                  <Stop offset="1" stopColor={t.beam} stopOpacity={0} />
+                </LinearGradient>
+              </Defs>
+              <Polygon points={BEAM_POINTS} fill="url(#beam)" />
             </Svg>
           </View>
           <Pressable
@@ -380,8 +397,8 @@ const styles = StyleSheet.create({
   },
   beam: {
     position: "absolute",
-    left: TRAIN_W - 6,
-    top: 6,
+    left: BEAM.x,
+    top: 0,
   },
   train: {
     width: TRAIN_W,
