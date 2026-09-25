@@ -1,3 +1,4 @@
+import { useAudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
 import { useIsFocused } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -46,6 +47,13 @@ export function CommuteScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   }, [plan.leaveMinutes, plan.targetTripId]);
 
+  const horn = useAudioPlayer(require("@/assets/sounds/train-horn.mp3"));
+  const honk = () => {
+    // Restart from the top so rapid taps each sound the horn.
+    horn.seekTo(0);
+    horn.play();
+  };
+
   const select = (tripId: string) => {
     setPickedTripId(tripId);
     if (Platform.OS !== "web") Haptics.selectionAsync();
@@ -92,6 +100,7 @@ export function CommuteScreen() {
           accessibilityLabel={
             data ? plan.sceneLabel : `${hero.mins} ${hero.until ?? ""}`.trim()
           }
+          onTrainPress={honk}
         />
         <View style={[styles.hero, { top: Math.max(insets.top + 12, 32) }]}>
           <Text style={[styles.greeting, { color: t.ink2 }]}>

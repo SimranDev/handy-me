@@ -8,11 +8,11 @@ import {
   Fraunces_600SemiBold,
 } from "@expo-google-fonts/fraunces";
 import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
-import AppTabs from "@/components/app-tabs";
 import { QueryProvider } from "@/components/query-provider";
 import { useSky } from "@/hooks/use-sky";
 
@@ -37,7 +37,11 @@ export default function RootLayout() {
   return (
     <QueryProvider>
       <StatusBar style={phase === "night" ? "light" : "dark"} />
-      <AppTabs />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        {/* Hidden: opened by long-pressing the Commute tab. */}
+        <Stack.Screen name="dev" options={{ presentation: "modal" }} />
+      </Stack>
     </QueryProvider>
   );
 }

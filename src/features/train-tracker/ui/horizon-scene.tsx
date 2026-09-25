@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -33,6 +39,7 @@ const SCENE_H = 500;
 const MAX_SCENE_W = 480;
 
 const TRAIN_W = 94;
+const TRAIN_H = 24;
 
 /**
  * Sun and moon travel an arc from the right (east, rising) to the left
@@ -87,6 +94,7 @@ type Props = {
   /** Run animations only while the screen is focused and the app is foregrounded. */
   active: boolean;
   accessibilityLabel: string;
+  onTrainPress?: () => void;
 };
 
 function arcPoint(t: number) {
@@ -103,6 +111,7 @@ export function HorizonScene({
   dueSoon,
   active,
   accessibilityLabel,
+  onTrainPress,
 }: Props) {
   const { width } = useWindowDimensions();
   const sceneWidth = Math.min(width, MAX_SCENE_W);
@@ -283,13 +292,23 @@ export function HorizonScene({
           style={[styles.pulse, { borderColor: t.you }, pulseStyle]}
         />
 
+        {/* Sized to the train body: Android only delivers touches inside a
+            view's bounds, so an overflowing child can't be tapped. */}
         <Animated.View style={[styles.trainTrack, trainStyle]}>
-          <View style={[styles.beam, { opacity: sky.lights }]}>
+          <View
+            pointerEvents="none"
+            style={[styles.beam, { opacity: sky.lights }]}
+          >
             <Svg width={62} height={15}>
               <Ellipse cx={31} cy={7.5} rx={31} ry={7.5} fill={t.beam} />
             </Svg>
           </View>
-          <View style={[styles.train, { backgroundColor: t.train }]}>
+          <Pressable
+            onPress={onTrainPress}
+            disabled={!onTrainPress}
+            hitSlop={12}
+            style={[styles.train, { backgroundColor: t.train }]}
+          >
             {[0, 1, 2, 3].map((i) => (
               <View
                 key={i}
@@ -303,7 +322,7 @@ export function HorizonScene({
                 { backgroundColor: t.win },
               ]}
             />
-          </View>
+          </Pressable>
         </Animated.View>
 
         {STATIONS.map((s) => (
@@ -343,20 +362,19 @@ const styles = StyleSheet.create({
   },
   trainTrack: {
     position: "absolute",
-    left: 0,
-    top: 0,
-  },
-  beam: {
-    position: "absolute",
-    left: -6,
-    top: 370,
-  },
-  train: {
-    position: "absolute",
     left: -TRAIN_W,
     top: 364,
     width: TRAIN_W,
-    height: 24,
+    height: TRAIN_H,
+  },
+  beam: {
+    position: "absolute",
+    left: TRAIN_W - 6,
+    top: 6,
+  },
+  train: {
+    width: TRAIN_W,
+    height: TRAIN_H,
     borderTopLeftRadius: 3,
     borderTopRightRadius: 22,
     borderBottomRightRadius: 2,

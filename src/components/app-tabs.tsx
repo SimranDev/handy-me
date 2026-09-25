@@ -1,4 +1,5 @@
-import type { Href } from "expo-router";
+import * as Haptics from "expo-haptics";
+import { router, type Href } from "expo-router";
 import {
   TabList,
   TabListProps,
@@ -7,7 +8,14 @@ import {
   TabTriggerSlotProps,
   Tabs,
 } from "expo-router/ui";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  type GestureResponderEvent,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FontFamily } from "@/constants/theme";
@@ -25,6 +33,19 @@ const TABS: { name: string; href: Href; label: string; shape: Shape }[] = [
 
 const BAR_CONTENT_HEIGHT = 52;
 
+/** The hidden dev menu opens from a long press on this tab. */
+const DEV_MENU_TAB = "index";
+const DEV_MENU_HOLD_MS = 800;
+
+function openDevMenu(event: GestureResponderEvent) {
+  // Skip TabTrigger's own long press, which would switch to this tab.
+  event.preventDefault();
+  if (Platform.OS !== "web") {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+  router.push("/dev");
+}
+
 /** Space screens should leave at the bottom so content clears the tab bar. */
 export function useTabBarHeight() {
   const { bottom } = useSafeAreaInsets();
@@ -38,7 +59,16 @@ export default function AppTabs() {
       <TabList asChild>
         <TabBar>
           {TABS.map((tab) => (
-            <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
+            <TabTrigger
+              key={tab.name}
+              name={tab.name}
+              href={tab.href}
+              asChild
+              {...(tab.name === DEV_MENU_TAB && {
+                onLongPress: openDevMenu,
+                delayLongPress: DEV_MENU_HOLD_MS,
+              })}
+            >
               <TabButton label={tab.label} shape={tab.shape} />
             </TabTrigger>
           ))}
