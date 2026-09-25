@@ -32,6 +32,11 @@ import {
   stepTrainMotion,
   type TrainMotion,
 } from "@/features/train-tracker/domain/train-track";
+import {
+  INITIAL_RIDE,
+  stepTrainRide,
+  type TrainRide,
+} from "@/features/train-tracker/domain/train-ride";
 
 /** The scene is drawn on a 390×500 canvas and scaled to the screen width. */
 const SCENE_W = 390;
@@ -80,9 +85,6 @@ const STATION_LABEL_W = 72;
 
 /** Centre of the "You" marker, for the arrival pulse. */
 const YOU = { x: 358.5, y: 374.5 };
-
-/** Speed (pt/ms) at which the bob reaches full height; ~a typical run. */
-const BOB_FULL_SPEED = 0.0005;
 
 type Props = {
   sky: Sky;
@@ -138,8 +140,7 @@ export function HorizonScene({
   const etaMs = useSharedValue(train?.etaMs ?? Number.NaN);
   const reduce = useSharedValue(reduceMotion);
   const motion = useSharedValue<TrainMotion>(INITIAL_MOTION);
-  const bobAmount = useSharedValue(0);
-  const bobY = useSharedValue(0);
+  const ride = useSharedValue<TrainRide>(INITIAL_RIDE);
 
   useEffect(() => {
     tripId.set(train?.tripId ?? null);
@@ -159,19 +160,16 @@ export function HorizonScene({
     );
     motion.value = next;
 
-    // A gentle bob that grows with speed and settles when the train stops.
+    // Settle onto the suspension on stopping. A frame after a pause or
+    // a new trip is a jump, not a drive.
     const dt = info.timeSincePreviousFrame ?? 0;
-    const speed =
-      dt > 0 && dt < 100 && next.tripId === prev.tripId
-        ? (next.x - prev.x) / dt
-        : 0;
-    const target = reduce.value ? 0 : Math.min(1, speed / BOB_FULL_SPEED);
-    const amount = bobAmount.value + (target - bobAmount.value) * 0.05;
-    bobAmount.value = amount < 0.001 ? 0 : amount;
-    bobY.value =
-      Math.sin((info.timestamp / 1000) * Math.PI * 2 * 1.6) *
-      0.8 *
-      bobAmount.value;
+    const drove = dt > 0 && dt < 100 && next.tripId === prev.tripId;
+    ride.value = stepTrainRide(
+      ride.value,
+      drove ? next.x - prev.x : null,
+      dt,
+      reduce.value,
+    );
   }, false);
 
   useEffect(() => {
@@ -179,7 +177,7 @@ export function HorizonScene({
   }, [active, frame]);
 
   const trainStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: motion.value.x }, { translateY: bobY.value }],
+    transform: [{ translateX: motion.value.x }, { translateY: ride.value.sag }],
   }));
 
   // --- "You" pulse when the train is due. ---
