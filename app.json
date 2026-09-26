@@ -46,7 +46,9 @@
           "recordAudioAndroid": false,
           "enableBackgroundPlayback": false
         }
-      ]
+      ],
+      "./plugins/with-gradle-jvm-args",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
