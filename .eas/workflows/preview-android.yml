@@ -17,6 +17,10 @@ jobs:
       APP_VERSION: ${{ needs.build.outputs.app_version }}
       COMMIT: ${{ needs.build.outputs.git_commit_hash }}
     steps:
+      # Custom jobs start without the repo; eas-cli needs the project
+      # (app.json and its config plugins) to look up the build.
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
       - name: Download APK
         run: |
           APK_URL=$(npx -y eas-cli@latest build:view "$BUILD_ID" --json \
