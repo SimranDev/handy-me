@@ -43,3 +43,4 @@ yarn-error.*
 
 # local APK/AAB builds (pnpm apk:build); also keeps them out of EAS cloud uploads
 /builds/
+/designer
