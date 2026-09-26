@@ -1,0 +1,30 @@
+name: Preview release (Android)
+
+jobs:
+  build:
+    name: Build preview APK
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  distribute:
+    name: Upload to Firebase App Distribution
+    needs: [build]
+    environment: preview
+    env:
+      BUILD_ID: ${{ needs.build.outputs.build_id }}
+      APP_VERSION: ${{ needs.build.outputs.app_version }}
+      COMMIT: ${{ needs.build.outputs.git_commit_hash }}
+    steps:
+      - name: Download APK
+        run: |
+          APK_URL=$(npx -y eas-cli@latest build:view "$BUILD_ID" --json \
+            | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).artifacts.buildUrl))")
+          curl -sL "$APK_URL" -o app.apk
+      - name: Distribute
+        run: |
+          npx -y firebase-tools appdistribution:distribute app.apk \
+            --app "$FIREBASE_APP_ID" \
+            --groups testers \
+            --release-notes "v$APP_VERSION (${COMMIT:0:7})"
