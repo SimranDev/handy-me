@@ -1,0 +1,9 @@
+# Match the supply-chain policy EAS enforces: don't resolve package versions
+# published less than a day ago, so a lockfile made locally passes on EAS.
+minimumReleaseAge: 1440
+
+# Newer pnpm (as on EAS) fails the install when a dependency's build script is
+# neither allowed nor denied. unrs-resolver (ESLint's import resolver) only
+# runs a native-binding fallback check; the platform binding installs anyway.
+allowBuilds:
+  unrs-resolver: false
