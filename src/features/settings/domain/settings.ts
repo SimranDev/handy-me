@@ -27,10 +27,15 @@ export type CommuteProfile = {
   destinationLabel: string;
 };
 
+/** Light or dark app surfaces, or whichever the phone is using. */
+export type AppearancePreference = "system" | "light" | "dark";
+
 /** There is always at least one profile, and exactly one is active. */
 export type Settings = {
   profiles: CommuteProfile[];
   activeProfileId: string;
+  /** The sky scene ignores this: it always follows the time of day. */
+  appearance: AppearancePreference;
 };
 
 export const WALK_MINUTES_MIN = 1;
@@ -57,6 +62,7 @@ export function blankProfile(id: string, name: string): CommuteProfile {
 export const DEFAULT_SETTINGS: Settings = {
   profiles: [blankProfile(DEFAULT_PROFILE_ID, DEFAULT_PROFILE_NAME)],
   activeProfileId: DEFAULT_PROFILE_ID,
+  appearance: "system",
 };
 
 /** A whole number of minutes within range; anything unusable is the default. */
@@ -127,6 +133,16 @@ function parseProfile(value: unknown, id: string): CommuteProfile {
 
 const PROFILE_ID = /^[A-Za-z0-9_-]{1,40}$/;
 
+const APPEARANCES: readonly AppearancePreference[] = [
+  "system",
+  "light",
+  "dark",
+];
+
+function parseAppearance(value: unknown): AppearancePreference {
+  return APPEARANCES.find((a) => a === value) ?? "system";
+}
+
 /**
  * Settings read back from storage. Missing, corrupt or out-of-range values
  * fall back to defaults field by field rather than failing as a whole.
@@ -147,7 +163,11 @@ export function parseSettings(raw: string | null): Settings {
 
   if (!Array.isArray(v.profiles)) {
     const legacy = parseProfile(v, DEFAULT_PROFILE_ID);
-    return { profiles: [legacy], activeProfileId: legacy.id };
+    return {
+      profiles: [legacy],
+      activeProfileId: legacy.id,
+      appearance: "system",
+    };
   }
 
   const seen = new Set<string>();
@@ -162,8 +182,10 @@ export function parseSettings(raw: string | null): Settings {
     profiles.push(parseProfile(item, id));
     if (profiles.length === PROFILES_MAX) break;
   }
-  if (profiles.length === 0) return DEFAULT_SETTINGS;
+  const appearance = parseAppearance(v.appearance);
+  if (profiles.length === 0) return { ...DEFAULT_SETTINGS, appearance };
   return {
+    appearance,
     profiles,
     activeProfileId: seen.has(v.activeProfileId as string)
       ? (v.activeProfileId as string)
@@ -231,13 +253,20 @@ export function removeProfile(settings: Settings, id: string): Settings {
     settings.activeProfileId === id
       ? profiles[Math.max(0, index - 1)].id
       : settings.activeProfileId;
-  return { profiles, activeProfileId };
+  return { ...settings, profiles, activeProfileId };
 }
 
 export function switchProfile(settings: Settings, id: string): Settings {
   return findProfile(settings, id)
     ? { ...settings, activeProfileId: id }
     : settings;
+}
+
+export function setAppearance(
+  settings: Settings,
+  appearance: AppearancePreference,
+): Settings {
+  return { ...settings, appearance };
 }
 
 export type SetupStep = "key" | "station";

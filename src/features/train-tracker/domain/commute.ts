@@ -19,7 +19,7 @@ export type CommutePlan = {
   minsLabel: string;
   /** Scheduled time of the target train, e.g. "20:44"; null when there is none. */
   arrivalLabel: string | null;
-  /** Line under the countdown, e.g. "until the 20:44 reaches Sunnyvale". */
+  /** Line under the countdown, e.g. "until the 20:44 to Britomart reaches Sunnyvale". */
   untilLabel: string;
   leaveTitle: string;
   leaveSub: string;
@@ -39,6 +39,8 @@ export type CommuteOptions = {
   walkMinutes: number;
   /** Short name of the user's station, e.g. "Sunnyvale". */
   stationName: string;
+  /** Where the user is going, e.g. "Britomart"; empty or missing to leave it out. */
+  destination?: string;
 };
 
 const MAX_ROWS = 3;
@@ -55,7 +57,7 @@ const nonNull = <T>(a: T | null): a is T => a != null;
 export function planCommute(
   nowMs: number,
   arrivals: Arrivals,
-  { pickedTripId, walkMinutes, stationName }: CommuteOptions,
+  { pickedTripId, walkMinutes, stationName, destination }: CommuteOptions,
 ): CommutePlan {
   const listed = [arrivals.next, ...arrivals.afterNext].filter(nonNull);
   const passed = (a: Arrival) => a.etaMs < nowMs - PASSED_GRACE_MS;
@@ -113,7 +115,9 @@ export function planCommute(
     minsLabel:
       mins === 0 ? "Arriving" : mins === 1 ? "1 minute" : `${mins} minutes`,
     arrivalLabel: formatClock(target.scheduledMs),
-    untilLabel: `until the ${formatClock(target.scheduledMs)} reaches ${stationName}`,
+    untilLabel: `until the ${formatClock(target.scheduledMs)}${
+      destination ? ` to ${destination}` : ""
+    } reaches ${stationName}`,
     leaveTitle,
     leaveSub,
     rows,

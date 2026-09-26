@@ -19,7 +19,7 @@ describe("trainFrontX", () => {
   it("is off stage well before, and after it has left", () => {
     expect(trainFrontX(20 * MINUTE)).toBe(OFFSTAGE_LEFT_X);
     expect(trainFrontX(Number.NaN)).toBe(OFFSTAGE_LEFT_X);
-    expect(trainFrontX(-2 * MINUTE)).toBe(520);
+    expect(trainFrontX(-2 * MINUTE)).toBe(560);
   });
 
   it("dwells at stations", () => {
@@ -49,8 +49,42 @@ describe("trainFrontX", () => {
 describe("stepTrainMotion", () => {
   const t0 = Date.parse("2026-09-26T08:00:00+12:00");
   const eta = t0 + 4.4 * MINUTE; // mid-way from Sturges Rd to Henderson
-  const start = (reduce = false): TrainMotion =>
-    stepTrainMotion(INITIAL_MOTION, "trip-a", eta, t0, reduce);
+  // Placed straight at its position (reduced motion skips the entrance).
+  const start = (): TrainMotion =>
+    stepTrainMotion(INITIAL_MOTION, "trip-a", eta, t0, true);
+
+  it("enters from off stage left and glides up to its position", () => {
+    const first = stepTrainMotion(INITIAL_MOTION, "trip-a", eta, t0, false);
+    expect(first.x).toBe(OFFSTAGE_LEFT_X);
+
+    const at = t0 + GLIDE_MS / 2;
+    const mid = stepTrainMotion(first, "trip-a", eta, at, false);
+    expect(mid.x).toBeGreaterThan(OFFSTAGE_LEFT_X);
+    expect(mid.x).toBeLessThan(trainFrontX(eta - at));
+
+    const done = stepTrainMotion(mid, "trip-a", eta, t0 + GLIDE_MS, false);
+    expect(done.x).toBe(trainFrontX(eta - t0 - GLIDE_MS));
+  });
+
+  it("appears straight at its position with reduced motion", () => {
+    expect(start().x).toBe(trainFrontX(eta - t0));
+  });
+
+  it("glides from where it was left when the scene resumes", () => {
+    const m = start();
+    const back = t0 + 2 * MINUTE;
+    const first = stepTrainMotion(m, "trip-a", eta, back, false, true);
+    expect(first.x).toBe(m.x);
+
+    const done = stepTrainMotion(first, "trip-a", eta, back + GLIDE_MS, false);
+    expect(done.x).toBe(trainFrontX(eta - back - GLIDE_MS));
+  });
+
+  it("jumps on resume with reduced motion", () => {
+    const back = t0 + 2 * MINUTE;
+    const next = stepTrainMotion(start(), "trip-a", eta, back, true, true);
+    expect(next.x).toBe(trainFrontX(eta - back));
+  });
 
   it("follows the timeline", () => {
     const m = start();
@@ -81,7 +115,7 @@ describe("stepTrainMotion", () => {
   });
 
   it("jumps instead of gliding with reduced motion", () => {
-    const m = start(true);
+    const m = start();
     const sooner = eta - MINUTE;
     const next = stepTrainMotion(m, "trip-a", sooner, t0, true);
     expect(next.x).toBe(trainFrontX(sooner - t0));
@@ -108,7 +142,7 @@ describe("stepTrainMotion", () => {
     expect(moving.x).toBeGreaterThan(m.x);
   });
 
-  it("jumps to a different train, even backwards", () => {
+  it("brings a different train in from off stage left", () => {
     const gone = stepTrainMotion(
       start(),
       "trip-a",
@@ -116,14 +150,18 @@ describe("stepTrainMotion", () => {
       eta + 3 * MINUTE,
       false,
     );
-    expect(gone.x).toBe(520);
-    const next = stepTrainMotion(
-      gone,
+    expect(gone.x).toBe(560);
+    const now = eta + 3 * MINUTE;
+    const next = stepTrainMotion(gone, "trip-b", now + 5 * MINUTE, now, false);
+    expect(next.x).toBe(OFFSTAGE_LEFT_X);
+
+    const done = stepTrainMotion(
+      next,
       "trip-b",
-      eta + 15 * MINUTE,
-      eta + 3 * MINUTE,
+      now + 5 * MINUTE,
+      now + GLIDE_MS,
       false,
     );
-    expect(next.x).toBe(trainFrontX(12 * MINUTE));
+    expect(done.x).toBe(trainFrontX(5 * MINUTE - GLIDE_MS));
   });
 });

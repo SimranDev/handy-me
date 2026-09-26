@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 import { aucklandParts, formatClock, HOUR, MINUTE } from "@/domain/time";
 import { skyPresets } from "@/features/dev-menu/domain/sky-presets";
 import {
@@ -185,7 +185,7 @@ function Section({
   children,
 }: {
   title: string;
-  theme: PhaseTheme;
+  theme: AppTheme;
   children: ReactNode;
 }) {
   return (
@@ -205,7 +205,7 @@ function Chip({
   style,
   onPress,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   label: string;
   sub?: string;
   selected?: boolean;
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   title: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
     fontSize: 34,
     lineHeight: 38,
   },
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   clock: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
     fontSize: 48,
     lineHeight: 52,
     letterSpacing: -1,

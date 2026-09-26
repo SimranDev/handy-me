@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   title: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
     fontSize: 44,
     lineHeight: 46,
   },

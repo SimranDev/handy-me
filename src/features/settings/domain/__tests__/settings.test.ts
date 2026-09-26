@@ -15,6 +15,7 @@ import {
   PROFILES_MAX,
   removeProfile,
   serialiseSettings,
+  setAppearance,
   type Settings,
   type StationChoice,
   switchProfile,
@@ -52,6 +53,7 @@ const home: CommuteProfile = {
 const three: Settings = {
   profiles: [toWork, home, gym],
   activeProfileId: "home",
+  appearance: "dark",
 };
 
 /** Settings read back from `value`, saved as JSON. */
@@ -155,7 +157,16 @@ describe("parseSettings", () => {
         blankProfile("b", "Gym"),
       ],
       activeProfileId: "b",
+      appearance: "system",
     });
+  });
+
+  it("keeps a saved appearance and ignores an unknown one", () => {
+    const profiles = [toWork];
+    expect(parsed({ profiles, appearance: "light" }).appearance).toBe("light");
+    expect(parsed({ profiles, appearance: "sepia" }).appearance).toBe("system");
+    expect(parsed({ profiles }).appearance).toBe("system");
+    expect(parsed({ walkMinutes: 9 }).appearance).toBe("system");
   });
 
   it("drops profiles without a usable, unique id", () => {
@@ -244,6 +255,7 @@ describe("profiles", () => {
         blankProfile(`p${i}`, `P${i}`),
       ),
       activeProfileId: "p0",
+      appearance: "system",
     };
     expect(canAddProfile(full)).toBe(false);
     expect(addProfile(full, "one-more")).toBe(full);
@@ -268,6 +280,7 @@ describe("profiles", () => {
     expect(removeProfile(three, "gym")).toEqual({
       profiles: [toWork, home],
       activeProfileId: "home",
+      appearance: "dark",
     });
   });
 
@@ -277,6 +290,13 @@ describe("profiles", () => {
       removeProfile({ ...three, activeProfileId: "work" }, "work")
         .activeProfileId,
     ).toBe("home");
+  });
+
+  it("sets the appearance without touching profiles", () => {
+    const next = setAppearance(three, "light");
+    expect(next.appearance).toBe("light");
+    expect(next.profiles).toBe(three.profiles);
+    expect(next.activeProfileId).toBe("home");
   });
 
   it("never removes the last profile", () => {

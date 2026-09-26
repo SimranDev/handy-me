@@ -22,7 +22,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 
-import type { PhaseTheme } from "@/constants/theme";
+import type { AppTheme } from "@/constants/theme";
 
 const OPEN_MS = 280;
 const CLOSE_MS = 220;
@@ -37,7 +37,7 @@ type Props = {
   onClose: () => void;
   /** After the sheet has finished sliding away. */
   onDismissed?: () => void;
-  theme: PhaseTheme;
+  theme: AppTheme;
   accessibilityLabel: string;
   children: ReactNode;
 };
@@ -194,17 +194,18 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 560,
     alignSelf: "center",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 10,
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
+    paddingHorizontal: 20,
+    boxShadow: "0 -10px 30px rgba(0,0,0,0.18)",
   },
   grabberArea: {
     alignItems: "center",
-    paddingTop: 8,
-    paddingBottom: 14,
+    paddingTop: 10,
+    paddingBottom: 18,
   },
   grabber: {
-    width: 36,
+    width: 38,
     height: 5,
     borderRadius: 2.5,
   },

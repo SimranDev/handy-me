@@ -2,7 +2,7 @@
 
 # Handy Me
 
-A personal app of handy everyday tools. The first feature is a train tracker: a commute screen whose sky scene and palette follow the time of day (dawn, midday, dusk, night), showing when to leave for the next train from the user's station. Each commute profile (e.g. "To work", "Gym") has its own station, platform, walk time and destination label. Profiles are created and edited in Settings and switched from the commute screen. Nothing about the commute is hard-coded.
+A personal app of handy everyday tools. The first feature is a train tracker: a commute screen whose sky scene follows the time of day (dawn, midday, dusk, night), while the app's surfaces are light or dark (following the phone unless chosen in Settings), showing when to leave for the next train from the user's station. Each commute profile (e.g. "To work", "Gym") has its own station, platform, walk time and destination label. Profiles are created and edited in Settings and switched from the commute screen. Nothing about the commute is hard-coded.
 
 ## Stack
 
@@ -10,7 +10,7 @@ A personal app of handy everyday tools. The first feature is a train tracker: a 
 - Expo Router with typed routes. Tabs are headless `expo-router/ui` tabs with a custom tab bar (`src/components/app-tabs.tsx`)
 - react-native-reanimated 4, react-native-svg, expo-haptics
 - Zustand for client state, persisted with react-native-mmkv (a Nitro module, so it needs a development build)
-- Fonts: DM Sans and Fraunces via `@expo-google-fonts`, loaded in `src/app/_layout.tsx`
+- Font: Geist via `@expo-google-fonts/geist`, loaded in `src/app/_layout.tsx`
 - Development build (`expo-dev-client`), not Expo Go
 - ESLint (`eslint-config-expo`) with Prettier defaults: double quotes, 80 columns
 
@@ -27,7 +27,7 @@ src/
     ui/                screens and components for the feature
   domain/              shared pure logic: Auckland time, sky model (suncalc sun/moon, day progress)
   components/          UI shared across features (tab bar, placeholder screen, query provider)
-  constants/theme.ts   time-of-day palettes (PhaseThemes), blendTheme, font families
+  constants/theme.ts   scene palettes by time of day (PhaseThemes), light/dark app palettes (UiThemes), blendTheme, font families
   hooks/               shared hooks (useNow, useSky, useAppActive)
 jest/                  Jest setup (Reanimated test utils) and stubs
 scripts/at-spike/      standalone Node script for exploring the AT API (its own package)
@@ -56,7 +56,7 @@ Run lint, typecheck and tests before calling a task done. Unit tests live in `__
 
 ## Environment
 
-- Non-secret settings (the commute profiles: station stop_code, station name, walk time, destination label; and which profile is active) live in `src/features/settings/store/settings-store.ts`, a Zustand store saved to MMKV. On the first launch with MMKV it imports, then removes, settings saved earlier with AsyncStorage. Store a platform's `stop_code`, never its `stop_id`: stop_id changes with each GTFS version.
+- Non-secret settings (the commute profiles: station stop_code, station name, walk time, destination label; which profile is active; and the appearance choice: system, light or dark) live in `src/features/settings/store/settings-store.ts`, a Zustand store saved to MMKV. On the first launch with MMKV it imports, then removes, settings saved earlier with AsyncStorage. Store a platform's `stop_code`, never its `stop_id`: stop_id changes with each GTFS version.
 - `.env` (gitignored, copy from `.env.example`) holds `EXPO_PUBLIC_DATA_SOURCE=mock|live`, read only in `src/features/train-tracker/api/data-source.ts`, and optionally `AT_API_KEY` for the dev proxy (see the key rule below). Restart the dev server after changing it.
 - `EXPO_PUBLIC_` values are inlined into the JS bundle and readable by anyone with the app. Never put secrets in them.
 - Reference env vars as `process.env.EXPO_PUBLIC_X` (static dot access). Destructuring or `process.env[name]` is not inlined.

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 import {
   clampWalkMinutes,
   type CommuteProfile,
@@ -232,7 +232,7 @@ function HeaderAction({
   onPress,
   disabled = false,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   label: string;
   onPress: () => void;
   disabled?: boolean;
@@ -270,7 +270,7 @@ function useDraft(saved: string) {
 }
 
 type TextSectionProps = {
-  theme: PhaseTheme;
+  theme: AppTheme;
   value: string;
   onChangeText: (text: string) => void;
   onCommit: () => void;
@@ -308,7 +308,7 @@ function StationSection({
   profile,
   hasKey,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   profile: CommuteProfile;
   hasKey: boolean;
 }) {
@@ -385,7 +385,7 @@ function WalkSection({
   minutes,
   onChange,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   minutes: number;
   onChange: (fn: Change) => void;
 }) {
@@ -442,7 +442,7 @@ function StepperButton({
   disabled,
   onPress,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   label: string;
   disabled: boolean;
   onPress: () => void;
@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
     gap: 30,
   },
   title: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
     fontSize: 34,
     lineHeight: 38,
   },

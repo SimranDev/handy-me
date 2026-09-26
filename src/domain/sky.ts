@@ -31,9 +31,9 @@ export type Sky = {
   progress: number;
   /** Nearest palette, for greetings and anything that needs one answer. */
   phase: Phase;
-  /** 0–1: stars, the moon and the lamp at "You". */
+  /** 0–1: stars and the moon. */
   night: number;
-  /** 0–1: the train's lit windows and headlight beam. */
+  /** 0–1: the train's headlight beam and the glow around your station. */
   lights: number;
   /** 0–1: midday clouds. */
   clouds: number;

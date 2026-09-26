@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 import { aucklandParts, HOUR } from "@/domain/time";
 import {
   normaliseDestinationLabel,
@@ -165,7 +165,7 @@ function StationStep({
   bottomInset,
   onChoose,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   date: string;
   enabled: boolean;
   bottomInset: number;
@@ -253,7 +253,7 @@ function PlatformStep({
   bottomInset,
   onChoose,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   station: RailStation;
   date: string;
   bottomInset: number;
@@ -332,7 +332,7 @@ function ListRow({
   sub,
   onPress,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   title: string;
   sub: string;
   onPress: () => void;
@@ -354,7 +354,7 @@ function ListRow({
   );
 }
 
-function Loading({ theme: t, label }: { theme: PhaseTheme; label: string }) {
+function Loading({ theme: t, label }: { theme: AppTheme; label: string }) {
   return (
     <View style={[styles.body, styles.loading]}>
       <ActivityIndicator color={t.cardInk} />
@@ -369,7 +369,7 @@ function LoadError({
   what,
   onRetry,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   error: unknown;
   what: string;
   onRetry: () => void;
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
     fontSize: 34,
     lineHeight: 38,
   },
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   errorTitle: {
-    fontFamily: FontFamily.serifSemiBold,
+    fontFamily: FontFamily.sansSemiBold,
     fontSize: 20,
     lineHeight: 25,
   },

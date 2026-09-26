@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 
 import { useTabBarHeight } from "@/components/app-tabs";
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 import { greetingFor } from "@/domain/sky";
 import { MINUTE } from "@/domain/time";
 import {
@@ -91,6 +91,7 @@ export function CommuteScreen() {
     pickedTripId,
     walkMinutes: profile?.walkMinutes ?? 0,
     stationName: station?.stationName ?? "your stop",
+    destination: profile?.destinationLabel,
   });
   const listed = data
     ? [data.next, ...data.afterNext, data.justDeparted].filter(
@@ -157,7 +158,6 @@ export function CommuteScreen() {
           };
   const staleNotice =
     !setup && data && failure ? failure.staleNotice(now - dataUpdatedAt) : null;
-  const destination = profile?.destinationLabel;
   const showSource = dataSource === "live" && !setup && target != null;
 
   return (
@@ -177,6 +177,7 @@ export function CommuteScreen() {
               : null
           }
           stations={setup ? [] : stations}
+          stationName={station?.stationName ?? "You"}
           dueSoon={
             plan.targetEtaMs != null &&
             plan.targetEtaMs - now <= MINUTE &&
@@ -194,7 +195,6 @@ export function CommuteScreen() {
           <View style={styles.greetingRow}>
             <Text style={[styles.greeting, { color: t.ink2 }]}>
               {greetingFor(sky.phase, now)}
-              {destination ? ` · to ${destination}` : ""}
             </Text>
             {showSource && target && (
               <SourceBadge live={target.source === "live"} theme={t} />
@@ -281,7 +281,7 @@ export function CommuteScreen() {
 }
 
 /** Whether the countdown comes from realtime data or only the timetable. */
-function SourceBadge({ live, theme: t }: { live: boolean; theme: PhaseTheme }) {
+function SourceBadge({ live, theme: t }: { live: boolean; theme: AppTheme }) {
   return (
     <View
       accessible
@@ -305,7 +305,7 @@ function ProfilePill({
   onPress,
 }: {
   name: string;
-  theme: PhaseTheme;
+  theme: AppTheme;
   onPress: () => void;
 }) {
   return (
@@ -325,11 +325,11 @@ function ProfilePill({
       <Text numberOfLines={1} style={[styles.pillText, { color: t.cardInk }]}>
         {name}
       </Text>
-      <Svg width={12} height={8} viewBox="0 0 12 8">
+      <Svg width={9} height={6} viewBox="0 0 9 6" style={styles.pillChevron}>
         <Path
-          d="M1 1.5l5 5 5-5"
+          d="M1 1.2l3.5 3.5 3.5-3.5"
           stroke={t.cardInk}
-          strokeWidth={1.8}
+          strokeWidth={1.6}
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
@@ -343,7 +343,7 @@ function SettingsLink({
   theme: t,
   compact = false,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   compact?: boolean;
 }) {
   return (
@@ -403,13 +403,14 @@ const styles = StyleSheet.create({
     right: 16,
     bottom: 14,
     maxWidth: "60%",
+    minHeight: 32,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingLeft: 14,
-    paddingRight: 13,
-    paddingVertical: 8,
+    gap: 7,
+    paddingLeft: 10,
+    paddingRight: 12,
     borderRadius: 999,
+    boxShadow: "0 4px 14px rgba(0,0,0,0.18)",
   },
   pillPressed: {
     opacity: 0.8,
@@ -421,8 +422,11 @@ const styles = StyleSheet.create({
   },
   pillText: {
     flexShrink: 1,
-    fontFamily: FontFamily.sansBold,
-    fontSize: 14,
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: 13,
+  },
+  pillChevron: {
+    marginLeft: 2,
   },
   link: {
     alignSelf: "flex-start",
@@ -441,14 +445,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   mins: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
+    fontVariant: ["tabular-nums"],
     fontSize: 62,
     lineHeight: 65,
     letterSpacing: -1,
     marginTop: 14,
   },
   until: {
-    fontFamily: FontFamily.serif,
+    fontFamily: FontFamily.sansMedium,
+    fontVariant: ["tabular-nums"],
     fontSize: 21,
     lineHeight: 27,
     marginTop: 6,
@@ -458,7 +464,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   leaveTitle: {
-    fontFamily: FontFamily.serifSemiBold,
+    fontFamily: FontFamily.sansSemiBold,
     fontSize: 27,
     lineHeight: 32,
   },
@@ -496,6 +502,7 @@ const styles = StyleSheet.create({
   },
   rowText: {
     fontFamily: FontFamily.sans,
+    fontVariant: ["tabular-nums"],
     fontSize: 15,
   },
 });

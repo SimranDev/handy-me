@@ -20,14 +20,14 @@ const TIMELINE: readonly (readonly [number, number])[] = [
   [5.75, 220],
   [3, 300], // the station before yours
   [2.75, 300],
-  [0, 358], // You (departs at the ETA)
+  [0, 358], // your station (departs at the ETA)
   [-0.5, 358],
-  [-1.5, 520], // off-stage right
+  [-1.5, 560], // off-stage right: the whole 139pt train past the 390pt scene
 ];
 
 export const OFFSTAGE_LEFT_X = TIMELINE[0][1];
 
-/** How long a forward correction glides for. */
+/** How long a forward glide (entrance, correction or resume) takes. */
 export const GLIDE_MS = 1500;
 
 export function easeInOutCubic(u: number): number {
@@ -80,9 +80,12 @@ export const INITIAL_MOTION: TrainMotion = {
 
 /**
  * Advance the drawn train to `nowMs`.
- * - A different train (trip) jumps straight to its position.
- * - A new ETA that puts the train further ahead glides there over GLIDE_MS
- *   (or jumps, with reduced motion).
+ * - A different train (trip) enters from off stage left and glides up to
+ *   its position over GLIDE_MS, so opening the app shows how far along it is.
+ * - A new ETA that puts the train further ahead glides there over GLIDE_MS.
+ * - `resumed` (the first frame after the scene was paused, e.g. the app
+ *   coming back to the foreground) glides from where the train was left.
+ * - With reduced motion, glides are jumps.
  * - The train never moves backwards: if a new ETA puts it behind where it
  *   is drawn, it holds until the timeline catches up.
  */
@@ -92,20 +95,22 @@ export function stepTrainMotion(
   etaMs: number,
   nowMs: number,
   reduceMotion: boolean,
+  resumed = false,
 ): TrainMotion {
   "worklet";
   const ideal = trainFrontX(etaMs - nowMs);
-  if (tripId !== prev.tripId) {
-    return { x: ideal, tripId, etaMs, glideFromX: ideal, glideStartMs: -1 };
-  }
+  const newTrip = tripId !== prev.tripId;
+  const fromX = newTrip ? OFFSTAGE_LEFT_X : prev.x;
 
   let { glideFromX, glideStartMs } = prev;
-  const corrected = etaMs !== prev.etaMs && !Number.isNaN(prev.etaMs);
-  if (corrected && ideal > prev.x) {
+  if (newTrip) glideStartMs = -1;
+  const corrected =
+    !newTrip && etaMs !== prev.etaMs && !Number.isNaN(prev.etaMs);
+  if ((newTrip || corrected || resumed) && ideal > fromX) {
     if (reduceMotion) {
       glideStartMs = -1;
     } else {
-      glideFromX = prev.x;
+      glideFromX = fromX;
       glideStartMs = nowMs;
     }
   }
@@ -118,7 +123,7 @@ export function stepTrainMotion(
   }
 
   return {
-    x: Math.max(prev.x, target),
+    x: Math.max(fromX, target),
     tripId,
     etaMs,
     glideFromX,

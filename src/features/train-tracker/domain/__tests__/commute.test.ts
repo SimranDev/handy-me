@@ -30,6 +30,17 @@ const plan = (
   planCommute(at, a, { pickedTripId, walkMinutes, stationName: "Sunnyvale" });
 
 describe("planCommute", () => {
+  it("names the destination in the countdown line when there is one", () => {
+    const options = { walkMinutes: 7, stationName: "Sunnyvale" };
+    expect(
+      planCommute(now, arrivals, { ...options, destination: "Britomart" })
+        .untilLabel,
+    ).toBe("until the 00:04 to Britomart reaches Sunnyvale");
+    expect(
+      planCommute(now, arrivals, { ...options, destination: "" }).untilLabel,
+    ).toBe("until the 00:04 reaches Sunnyvale");
+  });
+
   it("counts down to the next train and says when to leave", () => {
     const p = plan(now, arrivals);
     expect(p).toMatchObject({

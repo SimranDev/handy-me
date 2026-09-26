@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 
 export function Section({
   title,
@@ -17,7 +17,7 @@ export function Section({
   children,
 }: {
   title: string;
-  theme: PhaseTheme;
+  theme: AppTheme;
   children: ReactNode;
 }) {
   return (
@@ -34,7 +34,7 @@ export function Section({
 }
 
 type ButtonProps = {
-  theme: PhaseTheme;
+  theme: AppTheme;
   label: string;
   onPress: () => void;
   variant?: "primary" | "secondary" | "link" | "danger";
@@ -85,7 +85,7 @@ export function TextField({
   invalid = false,
   style,
   ...props
-}: TextInputProps & { theme: PhaseTheme; invalid?: boolean }) {
+}: TextInputProps & { theme: AppTheme; invalid?: boolean }) {
   return (
     <TextInput
       placeholderTextColor={t.muted}
@@ -105,7 +105,7 @@ export function Note({
   tone = "muted",
   children,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   tone?: "muted" | "error";
   children: ReactNode;
 }) {

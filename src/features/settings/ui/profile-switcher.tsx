@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { BottomSheet } from "@/components/bottom-sheet";
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 import {
   canAddProfile,
   type Settings,
@@ -24,7 +24,7 @@ export function ProfileSwitcher({
   visible: boolean;
   onClose: () => void;
   settings: Settings;
-  theme: PhaseTheme;
+  theme: AppTheme;
 }) {
   const [editing, setEditing] = useState(false);
   const [wasVisible, setWasVisible] = useState(visible);
@@ -131,11 +131,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 14,
+    paddingHorizontal: 4,
     marginBottom: 12,
   },
   title: {
-    fontFamily: FontFamily.serifSemiBold,
+    fontFamily: FontFamily.sansSemiBold,
     fontSize: 22,
     lineHeight: 28,
   },
@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
     minHeight: 52,
     justifyContent: "center",
     paddingHorizontal: 14,
-    marginTop: 12,
+    marginTop: 10,
     borderRadius: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderStyle: "dashed",
   },
   addText: {

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { FontFamily, type PhaseTheme } from "@/constants/theme";
+import { FontFamily, type AppTheme } from "@/constants/theme";
 import {
   type CommuteProfile,
   describeProfile,
@@ -8,20 +8,23 @@ import {
 
 /**
  * A commute profile in a list. "radio" rows pick the active profile;
- * "chevron" rows open the profile to edit it.
+ * "chevron" rows open the profile to edit it. The active row is tinted
+ * with `highlight` (by default the theme's selection tint).
  */
 export function ProfileRow({
   theme: t,
   profile,
   active,
   trailing,
+  highlight,
   onPress,
   accessibilityHint,
 }: {
-  theme: PhaseTheme;
+  theme: AppTheme;
   profile: CommuteProfile;
   active: boolean;
   trailing: "radio" | "chevron";
+  highlight?: string;
   onPress: () => void;
   accessibilityHint?: string;
 }) {
@@ -39,7 +42,7 @@ export function ProfileRow({
       accessibilityHint={accessibilityHint}
       style={({ pressed }) => [
         styles.row,
-        active && { backgroundColor: t.rule },
+        active && { backgroundColor: highlight ?? t.selection },
         pressed && styles.pressed,
       ]}
     >
@@ -59,11 +62,7 @@ export function ProfileRow({
       </View>
       {trailing === "radio" ? (
         <View
-          style={[
-            styles.radio,
-            { borderColor: active ? t.cardInk : t.rule },
-            !active && { borderWidth: 1.5 },
-          ]}
+          style={[styles.radio, { borderColor: active ? t.cardInk : t.rule }]}
         >
           {active && (
             <View style={[styles.radioDot, { backgroundColor: t.cardInk }]} />
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   name: {
-    fontFamily: FontFamily.sansBold,
+    fontFamily: FontFamily.sansSemiBold,
     fontSize: 16,
   },
   inUse: {
@@ -107,9 +106,9 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
