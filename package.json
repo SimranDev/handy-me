@@ -2,6 +2,18 @@
   "name": "handy-me",
   "main": "expo-router/entry",
   "version": "1.0.0",
+    "scripts": {
+    "start": "expo start",
+    "reset-project": "node ./scripts/reset-project.js",
+    "web": "expo start --web",
+    "lint": "expo lint",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "apk:build": "mkdir -p builds && pnpm dlx eas-cli@latest build -p android --profile preview --local --output ./builds/handy-me-preview.apk",
+    "apk:install": "adb install -r ./builds/handy-me-preview.apk",
+    "test": "jest"
+  },
+
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo/ui": "~57.0.20",
@@ -53,17 +65,6 @@
     "jest-expo": "~57.0.5",
     "prettier": "^3.9.9",
     "typescript": "~6.0.3"
-  },
-  "scripts": {
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
-    "web": "expo start --web",
-    "lint": "expo lint",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "apk:build": "mkdir -p builds && pnpm dlx eas-cli@latest build -p android --profile preview --local --output ./builds/handy-me-preview.apk",
-    "apk:install": "adb install -r ./builds/handy-me-preview.apk",
-    "test": "jest"
   },
   "private": true,
   "jest": {
